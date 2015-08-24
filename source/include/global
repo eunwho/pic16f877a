@@ -1,0 +1,76 @@
+#ifndef		__GLOBAL_VAR_
+#define		__GLOBAL_VAR_
+
+unsigned long ulWatchDog;
+int machine_state;
+
+int CodeID;
+char gSciTxBuf[16];
+char st[21]={0};
+char TimeCode[6];
+//int gFaultCode;				// Fault
+unsigned long gulRtsCount;				// Incr Timer2 irq base Clockof system
+
+int lcd_x_posi=0;
+int lcd_y_posi=1;
+
+int sci_rx_msg_start=0;
+int sci_rx_msg_end=0;
+char sci_rx_msg_box[SCI_RX_MSG_SIZE]={0};
+char Trip_Message[21] = {0};
+//char Message_Out_Flag = 0;
+//char Dont_Out_Message = 0;
+//int T_Cnt = 1;
+//int Trip_Ctrl = 0;
+
+char Flag_Btn = 1;		// Trip Page Flag
+char Flag_Set = 1;		// Select Control Flag for Set button
+char Flag_Start = 0;	// Text Output Toggle Flag
+char Flag_Page = 1;		// Menu Page
+
+char Trip_Header[]="trp";
+char Flag_Time = 0;
+char Trip_Error = 0;
+char Error_y_posi = 0;
+char Error_x_posi = 0;
+unsigned int Delay_Cnt = 99;
+unsigned long Delay_Timer = 800;
+char Time_Count = 2;
+char Old_SetLineNum = 2;
+signed char Time_Set_Number = 0;
+char Header_Count = 0;
+
+int machine_state;
+
+int Code[9];
+int CodeID;
+char gSciTxBuf[16];
+char st[21]={0};
+char TimeCode[6];
+//int gFaultCode;				// Fault
+unsigned long gulRtsCount;				// Incr Timer2 irq base Clockof system
+
+int lcd_x_posi=0;
+int lcd_y_posi=1;
+
+int sci_rx_msg_start=0;
+int sci_rx_msg_end=0;
+char sci_rx_msg_box[SCI_RX_MSG_SIZE]={0};
+char Trip_Message[20] = {0};
+
+char Flag_Btn = 1;		// Trip Page Flag
+char Flag_Set = 1;		// Select Control Flag for Set button
+char Flag_Start = 0;	// Text Output Toggle Flag
+char Flag_Page = 1;		// Menu Page
+
+char Trip_Header[]="trp";
+char Header_Count = 1;
+char Trip_Error = 0;
+char Error_y_posi = 0;
+char Error_x_posi = 0;
+unsigned int Delay_Cnt = 99;
+unsigned long Delay_Timer = 800;
+char Time_Count = 2;
+signed char Time_Set_Number = 0;
+
+#endif

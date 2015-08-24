@@ -1,0 +1,6 @@
+>>> Warning 203 "D:\work\lcdConverter\source\KeyProc.c" Line 536(1,1): Condition always TRUE
+>>> Warning 203 "D:\work\lcdConverter\source\main.C" Line 64(1,1): Condition always TRUE
+>>> Warning 216 "D:\work\lcdConverter\source\main.C" Line 157(0,1): Interrupts disabled during call to prevent re-entrancy:  (ulGetDelaymSec)
+>>> Warning 202 ".\include\global.h" Line 32(17,27): Variable never used:   Time_Count
+      Memory usage:   ROM=78%      RAM=83% - 97%
+      0 Errors,  4 Warnings.

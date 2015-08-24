@@ -1,0 +1,32 @@
+[PROJECT]
+Target=main.HEX
+Development_Mode=2
+Processor=0x877A
+ToolSuite=CCS
+
+[Directories]
+Include=
+Library=
+LinkerScript=
+
+[Target Data]
+FileList=main.C;
+BuildTool=C-COMPILER
+OptionString=+FM
+AdditionalOptionString=
+BuildRequired=1
+
+[main.C]
+Type=4
+Path=
+FileList=
+BuildTool=
+OptionString=
+AdditionalOptionString=
+
+[mru-list]
+1=D:\work\LCDCON~1\source\main.C
+
+[Windows]
+0=0000 D:\work\LCDCON~1\source\main.C 0 0 796 451 3 0
+

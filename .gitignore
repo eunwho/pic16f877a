@@ -1,0 +1,5 @@
+debug/
+Debug/
+obj/
+TEMP/
+*.bak
