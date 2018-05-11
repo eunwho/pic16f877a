@@ -100,6 +100,23 @@ void CopyCode2TxMsg(int cmd)
 
 void monitor_converter()
 {
+    int count = 0;
+    
+               //"01234567890123456789"
+   	strcpy(gStr, "[RUN] DC POWER      "); printLCD(0,0,gStr);
+	strcpy(gStr, "Vo: 0.0V   Io: 0.0A "); printLCD(1,0,gStr);
+	strcpy(gStr, "EunWho Power Electro"); printLCD(2,0,gStr);
+	strcpy(gStr, "TEL 82-51-262-7532  "); printLCD(3,0,gStr);
+
+    while(1){
+        (count < 9 ) ? count += 1 :count = 0;
+    
+        DisplayChar(0, 17, count + '0');
+        __delay_ms(100);
+    }
+}
+void monitor_converterBk()
+{
 	int loopCtrl =1;
 	int debug;
 
@@ -108,6 +125,12 @@ void monitor_converter()
 
 	LCD_Cmd(0x01);  // clear lcd
 	LCD_Cmd(CURSOR_OFF);
+               //"01234567890123456789"
+   	strcpy(gStr, "[RUN] DC POWER      "); printLCD(0,0,gStr);
+	strcpy(gStr, "Vo: 0.0V   Io: 0.0A "); printLCD(1,0,gStr);
+	strcpy(gStr, "EunWho Power Electro"); printLCD(2,0,gStr);
+	strcpy(gStr, "TEL 82-51-262-7532  "); printLCD(3,0,gStr);
+
 
 	while( loopCtrl)
 	{ 
@@ -168,7 +191,7 @@ void monitor_converter()
 			else disp_count ++;
 		}
 		__delay_ms(100);
-	} // while loop
+  	} // while loop
 }
 
 

@@ -4,8 +4,17 @@
  *
  * Created on 2018? 5? 9? (?), ?? 4:48
  */
+// CONFIG
+#pragma config FOSC = HS        // Oscillator Selection bits (HS oscillator)
+#pragma config WDTE = OFF       // Watchdog Timer Enable bit (WDT disabled)
+#pragma config PWRTE = OFF      // Power-up Timer Enable bit (PWRT disabled)
+#pragma config BOREN = OFF      // Brown-out Reset Enable bit (BOR disabled)
+#pragma config LVP = OFF        // Low-Voltage (Single-Supply) In-Circuit Serial Programming Enable bit (RB3 is digital I/O, HV on MCLR must be used for programming)
+#pragma config CPD = OFF        // Data EEPROM Memory Code Protection bit (Data EEPROM code protection off)
+#pragma config WRT = OFF        // Flash Program Memory Write Enable bits (Write protection off; all program memory may be written to by EECON control)
+#pragma config CP = OFF         // Flash Program Memory Code Protection bit (Code protection off)
 
-#include <xc.h>
+
 
 #include "./include/header.h"
 #include "./include/extern.h"
@@ -49,13 +58,12 @@ void setup()
 	INTCONbits.T0IE = 1 ;//enable_interrupts(INT_RDA);	
 	INTCONbits.GIE = 0 ;            //enable_interrupts(GLOBAL);	
 
-             //"01234567890123456789"
-	strcpy(gStr, "DIGITAL OPERAT      "); printLCD(0,0,gStr);
-	strcpy(gStr, "[EwDo-21] v2.60     "); printLCD(1,0,gStr);
-	strcpy(gStr, "EunWho Power Electic"); printLCD(2,0,gStr);
+               //"01234567890123456789"
+	strcpy(gStr, "DIGITAL OPERATOR    "); printLCD(0,0,gStr);
+	strcpy(gStr, "[EwDo-21] v3.60     "); printLCD(1,0,gStr);
+	strcpy(gStr, "EunWho Power Electro"); printLCD(2,0,gStr);
 	strcpy(gStr, "TEL 82-51-262-7532  "); printLCD(3,0,gStr);
-	__delay_ms(3250);
-	__delay_ms(3250);
+	__delay_ms(5000);
 }
 
 void main()
@@ -76,14 +84,11 @@ void main()
 			machineState = STATE_MONITOR_MODE;
 			__delay_ms(100); 
 		}
-		
-
 		if	   ( machineState == STATE_SET_MODE ) SelectMenuPage1();			
 		else if( machineState == STATE_SET_MODE2 ) SelectMenuPage2();			
 		else if( machineState == STATE_EDIT_MODE) EditCodeDataProc();			
 		else if( machineState == STATE_TRIP_MODE) TripCodeDataProc();			
 		else if( machineState == STATE_RESET_MODE) ResetCodeDataProc();		
-		else if( machineState == STATE_TIME_MODE) TimeDataSetProc();			
 		// else if( machineState == STATE_ERROR_MODE)	ErrorCodeDataProc();	
 		else if( machineState == RECORD_CLEAR_MODE) RecordClearProc();			
 		else if( machineState == SYSTEM_INIT_MODE) SystemInitProc();			
@@ -96,6 +101,7 @@ void interrupt interruptServiceRoutine()
 {
 	static long watchdog=0;
    	static unsigned long uartMsecCount=0;
+    static unsigned long ulTemp;
 
     if(PIR1bits.TMR1IF){    
         CLRWDT();
@@ -121,10 +127,13 @@ void interrupt interruptServiceRoutine()
     //check if the interrupt is caused by RX pin
     if(PIR1bits.RCIF == 1)
     {
-    	if( ulGetDelaymSec( uartMsecCount) > 200 ){ 
+        if( gulRtsCount < uartMsecCount ) ulTemp =  65535 - uartMsecCount + gulRtsCount;
+        else                              ulTemp = gulRtsCount - uartMsecCount;
+     
+        if( ulTemp > 200 ){ 
         	sci_rx_msg_start = sci_rx_msg_end = 0;
         }
-        uartMsecCount = ulGetNowCount_msec();	
+        uartMsecCount = gulRtsCount;	
         sci_rx_msg_box[ sci_rx_msg_end ] = RCREG;
     	sci_rx_msg_end++;	
         if( sci_rx_msg_end >= SCI_RX_MSG_SIZE ) sci_rx_msg_end = 0;

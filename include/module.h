@@ -31,7 +31,6 @@ extern void EditCodeDataProc();
 extern void TripCodeDataProc();
 extern void ReadRealTimeData();
 extern void ResetCodeDataProc();
-extern void TimeDataSetProc();
 extern void RecordClearProc();
 extern void SystemInitProc();
 

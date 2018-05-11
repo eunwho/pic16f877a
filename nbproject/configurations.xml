@@ -7,7 +7,6 @@
       <itemPath>include/header.h</itemPath>
       <itemPath>include/extern.h</itemPath>
       <itemPath>include/module.h</itemPath>
-      <itemPath>include/config.h</itemPath>
       <itemPath>include/define.h</itemPath>
       <itemPath>/opt/microchip/xc8/v1.44/include/pic16f877a.h</itemPath>
       <itemPath>include/global.h</itemPath>
@@ -15,21 +14,21 @@
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-    </logicalFolder>
-    <logicalFolder name="SourceFiles"
-                   displayName="Source Files"
-                   projectFiles="true">
       <itemPath>sub.c</itemPath>
       <itemPath>sci.c</itemPath>
       <itemPath>lcd.c</itemPath>
       <itemPath>keyProc.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>main.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
     </logicalFolder>
-    <itemPath>main.c</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>include</Elem>

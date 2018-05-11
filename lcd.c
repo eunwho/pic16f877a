@@ -22,7 +22,8 @@ void Busy()
 	PORTD = 0x00;
 	LCD_RW = 1;
 	LCD_CE = 1;
-    __delay_ms(5);
+    // __delay_ms(1);
+    __delay_us(100);
 	LCD_CE = 0 ;
 	LCD_RS = 0;
 	LCD_RW = 0; 	
@@ -35,9 +36,11 @@ void LCD_Cmd(unsigned char cmd)
 	LCD_RS = 0;
 	LCD_RW = 0;
 	LCD_CE = 1;
-	__delay_ms(2);						   
+	// __delay_ms(2);						   
+	__delay_us(50);						   
 	LCD_CE = 0;
-	__delay_ms(2);						   
+	// __delay_ms(2);						   
+	__delay_us(50);						   
 	LCD_CE = 1;
 }
 

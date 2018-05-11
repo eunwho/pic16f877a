@@ -1,7 +1,7 @@
 #ifndef		__HEADER_FILES_
 #define		__HEADER_FILES_
+#include    <xc.h>
 
-#include    "config.h"
 #include	"define.h"
 #include	"module.h"
 #include	"extern.h"
