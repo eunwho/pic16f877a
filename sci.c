@@ -13,21 +13,37 @@ void SerialPortSetup()
 {
 	TXSTA=0;
 	RCSTA=0;	
-	
+	// port \BC\B3\C1\A4 port_C.7=RX --> input, port_C.6=TX --> output
 	TRISC=0b10010000;	// debug
 
 	SPBRG = 12;//SPBRG=12;			// 38400
+	// SPBRG = 4; // 115200
 	
 	TXSTA=0b00000100;		// TX : disable,8bit data, Asynchronous mode, 16x mode
+	// serial_port_enable();
+	RCSTA=0b10011000;//RCSTA=0b10010000;		// RX : disable, clear error
+	TXSTAbits.TXEN = 1;     // transmit_enable();    
+/*    
+	SPBRG = 12;//SPBRG=12;			// 38400
+    // RCSTAbits.SPEN = 
+    
+    PIE1bits.TXIE = 0;
+
+    TXSTA=0;
+	RCSTA=0;	
+	
+	TRISC=0b10010000;	// debug
+
+	TXSTA=0b00000100;		// TX : disable,8bit data, Asynchronous mode, 16x mode
 	RCSTA=0b10011000;       //RCSTA=0b10010000;		// RX : disable, clear error
-	TXSTAbits.TXEN = 1;     // transmit_enable();
+*/
 }
 
 int getSciMsg(unsigned char * str)
 {
 	int count = 0;
 
-	while( sci_rx_msg_start != sci_rx_msg_end && count < 20 )
+	while( (sci_rx_msg_start != sci_rx_msg_end) && (count < SCI_RX_MSG_SIZE) )
 	{		
 		*(str ++) = sci_rx_msg_box[sci_rx_msg_start ++ ];
 		if( sci_rx_msg_start >= SCI_RX_MSG_SIZE ) sci_rx_msg_start = 0;		

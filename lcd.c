@@ -14,98 +14,57 @@
 #include    "./include/header.h"
 #include    "./include/extern.h"
 
-void Busy()
-{
-	int	LCD_Busy;
+//	PORTD bits 4-7 are connected to the LCD data bits 4-7 (high nibble)
+//	PORTE bit 0 is connected to the LCD RS input (register select)
+//	PORTE bit 1 is connected to the LCD EN bit (enable)
 
-	__delay_us(10);	// debug
-	PORTD = 0x00;
-	LCD_RW = 1;
-	LCD_CE = 1;
-    // __delay_ms(1);
-    __delay_us(100);
-	LCD_CE = 0 ;
-	LCD_RS = 0;
-	LCD_RW = 0; 	
+// 4bit setting PORT D data 
+
+#define LCD_STROBE ((LCD_CE = 1),(LCD_CE =0))
+
+void lcd_write(unsigned char c)
+{
+    PORTD = c & 0xf0;
+    LCD_STROBE;
+    PORTD = ((c << 4 ) & 0xf0) ;
+    LCD_STROBE;
+    __delay_us(40);
+}
+//--- Clear and home the LCD
+void lcd_clear(void)
+{
+    LCD_RS = 0;
+    lcd_write(0x01);
+    __delay_ms(2);
+}
+void lcdCursorOff(){
+    LCD_RS = 0;
+    lcd_write(CURSOR_OFF);
+    __delay_ms(2);    
 }
 
-
-void LCD_Cmd(unsigned char cmd)
-{
-	PORTD = cmd;
-	LCD_RS = 0;
-	LCD_RW = 0;
-	LCD_CE = 1;
-	// __delay_ms(2);						   
-	__delay_us(50);						   
-	LCD_CE = 0;
-	// __delay_ms(2);						   
-	__delay_us(50);						   
-	LCD_CE = 1;
+void lcd_putch(char c){
+    LCD_RS = 1;	// write characters
+    PORTD =  c & 0xf0 ; 
+    LCD_STROBE;
+    PORTD = ((c << 4) & 0xf0);
+    LCD_STROBE;
+    __delay_us(40);
 }
 
-// LCD initialization after power on
+/* write a string of chars to the LCD */
 
-
-void LCD_Initialization()
+void lcd_puts(const char * s)
 {
-	LCD_CE = 0;
-	LCD_RS = 0;
-	LCD_RW = 0;
-
-	PORTD = 0;
-	PORTD = 0x38;
-
-	LCD_CE = 1;
-    __delay_us(10);
-	LCD_CE = 0;
-	__delay_ms(20);
-	PORTD = 0x38;
-	LCD_CE = 1;
-	Nop();
-	Nop();
-	LCD_CE=0;
-	__delay_ms(5);
-	LCD_Cmd(DISPLAY_ON);		// display on, curse off, blink off
-	LCD_Cmd(0x01);				// display on, curse off, blink off
-	LCD_Cmd(0x06);				// LCD clear, curse home
-	LCD_Cmd(0x80);				// initial DDRAM address
-	LCD_Cmd(0x01);				// LCD clear,curse home
+    int count = 0;
+    LCD_RS = 1;	// write characters
+    while( (* s) && (count < 20) ){
+        lcd_write(* s ++);
+        count ++;
+    }
 }
 
-void LCD_AddrSet(int addr)
-{
-	Busy();
-	PORTD = (unsigned)(addr+DDRAM);
-	LCD_CE = 1;
-    Nop();
-	LCD_CE = 0;
-}
-
-void DisplayChar(int row,int offset,char data)
-{
-	int	ROW_Addr;
-	switch (row)
-	{
-		case	0	:	ROW_Addr=ROW1;	break;
-		case	1	:	ROW_Addr=ROW2;	break;
-		case	2	:	ROW_Addr=ROW3;	break;
-		case	3	:	ROW_Addr=ROW4;	break;
-	}
-	LCD_CE = 0;
-	LCD_RS = 0;
-	LCD_RW = 0;
-
-	LCD_AddrSet(ROW_Addr+offset);
-	Busy();
-	PORTD = data;
-	LCD_RS = 1;
-	LCD_CE = 1;
-	LCD_CE = 0;
-	LCD_RS = 0;
-}
-
-void lcdCursor(int row,int offset,char CursorCmd)
+void lcdCursor(int row,int offset, unsigned char CursorCmd)
 {
 	int	Addr;
 	switch (row)
@@ -115,15 +74,76 @@ void lcdCursor(int row,int offset,char CursorCmd)
 		case	2	:	Addr=ROW3;	break;
 		case	3	:	Addr=ROW4;	break;
 	}
-	LCD_AddrSet(Addr+offset);
-	LCD_Cmd(CursorCmd);
+    LCD_RS = 0;
+    lcd_write(Addr+offset+DDRAM);
+	lcd_write(CursorCmd);
 }
 
-void printLCD(int row, int offset,char * string)
+/* write one character to the LCD */
+
+
+// Go to the specified position
+
+void lcd_goto(unsigned char pos){
+    LCD_RS = 0;
+    lcd_write(0x80+pos);
+}
+
+/* initialise the LCD - put into 4 bit mode */
+void DisplayChar(int row, int offset, char c)
 {
-	while (* string && ( offset <  20)){
-		DisplayChar(row,offset++,*string++);
+    int	Addr;
+	switch (row)
+	{
+		case	0	:	Addr=ROW1;	break;
+		case	1	:	Addr=ROW2;	break;
+		case	2	:	Addr=ROW3;	break;
+		case	3	:	Addr=ROW4;	break;
 	}
+    //lcd_goto(row+offset);
+    //lcdCursor(row,offset,DISPLAY_ON );//
+    // lcd_goto(Addr+offset);
+    lcd_goto(Addr+offset);    
+    lcd_putch(c);
+}
+
+void lcd_init(void){
+    LCD_RW = 0;	// write control bytes
+    
+    LCD_RS = 0;	// write control bytes
+    __delay_ms(15);	// power on delay
+    PORTD = 0x30;	// attention!
+    LCD_STROBE;
+    __delay_ms(5);
+    LCD_STROBE;
+    __delay_us(100);
+    LCD_STROBE;
+    __delay_ms(5);
+    PORTD = 0x20;	// set 4 bit mode
+    LCD_STROBE;
+    __delay_us(40);
+    lcd_write(0x28);	// 4 bit mode, 1/16 duty, 5x8 font
+    lcd_write(0x08);	// display off
+    lcd_write(0x0F);	// display on, blink curson on
+    lcd_write(0x06);	// entry mode
+}
+
+void printLCD(int row, int offset,char * string,int len)
+{
+    int	i,Addr;
+	switch (row)
+	{
+		case	0	:	Addr=ROW1;	break;
+		case	1	:	Addr=ROW2;	break;
+		case	2	:	Addr=ROW3;	break;
+		case	3	:	Addr=ROW4;	break;
+	}
+    lcd_goto(Addr+offset);
+    i = 0;
+    while((*string) && (i < len) ){
+        i++;
+        lcd_putch(*string ++);
+    }
 }
 
 // end of file

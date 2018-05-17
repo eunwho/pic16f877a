@@ -71,7 +71,8 @@ const char msgEditAddr[21] ={"[EDIT] 000:0.000e+0 "};
 
 void clear_line( int low )
 {
-	strcpy(gStr,str_clear_line); printLCD(low,0,gStr); 
+	strcpy(gStr,str_clear_line); 
+    printLCD(low,0,gStr,20); 
 }
 
 
@@ -98,99 +99,126 @@ void CopyCode2TxMsg(int cmd)
 	else gSciTxBuf[2] = '4';				// read data		
 }
 
-void monitor_converter()
+void monitor_converter_bk()
 {
     int count = 0;
-    
-               //"01234567890123456789"
-   	strcpy(gStr, "[RUN] DC POWER      "); printLCD(0,0,gStr);
-	strcpy(gStr, "Vo: 0.0V   Io: 0.0A "); printLCD(1,0,gStr);
-	strcpy(gStr, "EunWho Power Electro"); printLCD(2,0,gStr);
-	strcpy(gStr, "TEL 82-51-262-7532  "); printLCD(3,0,gStr);
+    char strTemp[21];
+	BUTTON KeyIn;
 
     while(1){
-        (count < 9 ) ? count += 1 :count = 0;
-    
-        DisplayChar(0, 17, count + '0');
+		KeyIn = GetKey();
+		if( KeyIn == BTN_SET 	){	
+    		strcpy(gSciTxBuf,"9:4:900:0.000e+0");
+            SendSciString( gSciTxBuf );
+        }
         __delay_ms(100);
+        if( getSciMsg(gStr)){
+            if(strlen(gStr)> 19){
+                strncpy(strTemp,gStr,20);                
+                printLCD(2,0,strTemp,20);
+                printLCD(3,0,& gStr[20],20);
+            }
+            else{
+                printLCD(2,0,gStr,20);                
+            }
+        }
     }
 }
-void monitor_converterBk()
+
+//01234567890123456789
+//[TRIP]    EUNWHO.P.E
+//Io:000.0A  Vo:000.0V
+//Po:000.0kW Vd:000.0V
+//T_CODE: 000  
+// UNDER VOLT
+
+//          Io   Vo     Po   Vdc
+//[TRIP] ,000.0,000.0,000.0,000.0,
+
+void monitSystem(char * strIn){
+    int i,len;
+   
+    strncpy(lcdOut,sci_rx_msg_box,7);
+    printLCD(0,0,lcdOut,7); 
+
+    strncpy(lcdOut,sci_rx_msg_box+8,5);
+    printLCD(1,3,lcdOut,5);
+
+    strncpy(lcdOut,sci_rx_msg_box+14,5);
+    printLCD(1,14,lcdOut,5); 
+
+    strncpy(lcdOut,sci_rx_msg_box+21,4);
+    printLCD(2,3,lcdOut,4);
+
+    strncpy(lcdOut,sci_rx_msg_box+26,6);
+    printLCD(2,14,lcdOut,6); 
+
+    if( *(sci_rx_msg_box+1) == 'T' ){
+
+        printLCD(0,7,"  E_CODE=    ",13);                
+
+        strncpy(lcdOut,sci_rx_msg_box+32,3);
+        printLCD(0,16,lcdOut,3);
+        
+        strncpy(lcdOut,sci_rx_msg_box+36,18);        
+        lcdOut[19] = 0;
+        printLCD(3,0,lcdOut,20); 
+    }
+    else{
+        printLCD(3,0,"   www.eunwho.com    ",20);                
+    }
+}
+
+
+void lcdStateName( void ){
+    int i,len;
+   
+    // printLCD(0,0,"[WAIT] ",7);
+
+    len = strlen(" EUNWHO P.E.");   
+    printLCD(0,7," EUNWHO P.E.",len);
+
+    printLCD(1,0,"Io:",3);
+    printLCD(1,8,"A ",2);    
+
+    printLCD(1,10,"Vo: ",4); 
+    DisplayChar(1,19,'V');
+
+    printLCD(2,0,"Po: ",3); 
+    printLCD(2,7,"kW ",3);
+
+    printLCD(2,10,"Vd: ",4); 
+    DisplayChar(2,19,'V');
+
+    printLCD(3,0,"   www.eunwho.com    ",20);                
+}
+
+void monitor_converter()
 {
 	int loopCtrl =1;
 	int debug;
 
 	BUTTON KeyIn;
 
-
-	LCD_Cmd(0x01);  // clear lcd
-	LCD_Cmd(CURSOR_OFF);
-               //"01234567890123456789"
-   	strcpy(gStr, "[RUN] DC POWER      "); printLCD(0,0,gStr);
-	strcpy(gStr, "Vo: 0.0V   Io: 0.0A "); printLCD(1,0,gStr);
-	strcpy(gStr, "EunWho Power Electro"); printLCD(2,0,gStr);
-	strcpy(gStr, "TEL 82-51-262-7532  "); printLCD(3,0,gStr);
-
-
+	lcd_clear( );  // clear lcd
 	while( loopCtrl)
 	{ 
 		KeyIn = GetKey();
-		lcdyPosition = 1; lcdxPosition = 0;
-
-		debug =getSciMsg(gStr); 		
-		if( debug ) {
-			if(debug > 19 ); gStr[19] = 0;
-			printLCD(lcdyPosition,lcdyPosition,gStr);
-		}
-
-		if		( KeyIn == BTN_SET 	){	machineState = STATE_SET_MODE; loopCtrl = 0;	return;}
+		if		(KeyIn == BTN_SET 	){	machineState = STATE_SET_MODE; loopCtrl = 0;	return;}
 		else if	(KeyIn == BTN_RUN	){	strcpy(gSciTxBuf,"9:4:905:0.000e-0"); SendSciString( gSciTxBuf );}
 		else if	(KeyIn == BTN_STOP	){	strcpy(gSciTxBuf,"9:4:905:1.000e-0"); SendSciString( gSciTxBuf );}
 		else if	(KeyIn == BTN_UP	){ 	strcpy(gSciTxBuf,"9:4:905:2.000e-0"); SendSciString( gSciTxBuf );}
 		else if	(KeyIn == BTN_DOWN	){	strcpy(gSciTxBuf,"9:4:905:3.000e-0"); SendSciString( gSciTxBuf );}
 		else{
-			if( disp_count == 0){ 
-				lcdyPosition = 0; lcdxPosition = 0;
-				strcpy(gSciTxBuf,"9:4:901:0.000e-0");
-			}
-			else if( disp_count == 1){
-				lcdyPosition = 0; lcdxPosition = 10;
-				strcpy(gSciTxBuf,"9:4:902:0.000e-0");	// Power Input
-			}	
-			else if( disp_count == 2){
-				lcdyPosition = 2; lcdxPosition = 0;
-				strcpy(gSciTxBuf,"9:4:902:1.000e-0");	// Vdc
-			}
-			else if( disp_count == 3){
-				lcdyPosition = 2; lcdxPosition = 10;
-				strcpy(gSciTxBuf,"9:4:902:2.000e-0");	// I RMS Source 
-			}
-			else if( disp_count == 4){
-				lcdyPosition = 3; lcdxPosition = 0;
-				strcpy(gSciTxBuf,"9:4:902:3.000e-0");	// I alpa
-			}
-			else {
-				lcdyPosition = 3; lcdxPosition = 10;
-				strcpy(gSciTxBuf,"9:4:902:4.000e-0");	// I beta
-			}
-			sci_rx_msg_start = sci_rx_msg_end = 0;
-			SendSciString( gSciTxBuf );
-			__delay_ms(50);
-			debug = getSciMsg(gStr);
-			if( debug ) {
-				if( debug> 9);
-				gStr[10] = 0;
-				printLCD(lcdyPosition,lcdxPosition,gStr);
-			}
-			else {
-				strcpy(gStr,"  ---   ");	
-				gStr[0] = disp_count + '0';
-				printLCD(lcdyPosition,lcdxPosition,gStr);
-			}
-			if(disp_count >= 5 ) disp_count = 0; 
-			else disp_count ++;
+            lcdStateName();	
+    		strcpy(gSciTxBuf,"9:4:900:0.000e+0");
+            SendSciString( gSciTxBuf );
+        }
+    	__delay_ms(100);
+		debug =getSciMsg(gStr); 		
+    	if( debug ) {
+            monitSystem(gStr);
 		}
-		__delay_ms(100);
   	} // while loop
 }
 
@@ -201,22 +229,18 @@ void SelectMenuPage2()
 	int loopCtrl =1;
 	int selection = 1;
 
-	LCD_Cmd(0x01);
+	lcd_clear( );
 	strcpy(gStr, " - MAIN MENU -   2/2");
-	printLCD(0,0,gStr);
+	printLCD(0,0,gStr,20);
 
-	DisplayChar(1, 0, '4');
-	strcpy(gStr, " DATE & TIME SET  ");
-	printLCD(1,2,gStr);
+	strcpy(gStr, "4 DATE & TIME SET  ");
+	printLCD(1,0,gStr,20);
 
-	DisplayChar(2, 0, '5');
-	strcpy(gStr, " RECORD CLEAR ALL ");
-	printLCD(2,2,gStr);
+	strcpy(gStr, "5 RECORD CLEAR ALL ");
+	printLCD(2,0,gStr,20);
 
-	DisplayChar(3, 0, '6');
-	strcpy(gStr, " SYSTEM INIT      ");
-	strcpy(gStr, " POSION VALUE TEST");
-	printLCD(3,2,gStr);
+	strcpy(gStr, "6 SYSTEM INIT      ");
+	printLCD(3,0,gStr,20);
 
 	while( loopCtrl )
 	{
@@ -250,6 +274,9 @@ void SelectMenuPage2()
 	}
 }
 
+// read data format   "0123456789012345"
+// read data format   "9:4:123:x.xxxe-x"
+// write data format  "9:6:123:1.234e-3"
 
 void SelectMenuPage1()			// System 설정 메뉴
 {
@@ -258,21 +285,21 @@ void SelectMenuPage1()			// System 설정 메뉴
 	int loopCtrl =1;
 	int selection = 1;
 
-	LCD_Cmd(0x01);
+	lcd_clear( );
 	strcpy(gStr, " - MAIN MENU -   1/2");
-	printLCD(0,0,gStr);
+	printLCD(0,0,gStr,20);
 
-	DisplayChar(1, 0, '1');
-	strcpy(gStr, " EDIT CTRL DATA   ");
-	printLCD(1,2,gStr);
+	// DisplayChar(1, 0, '1');
+	strcpy(gStr, "1 EDIT CTRL DATA   ");
+	printLCD(1,0,gStr,20);
 
-	DisplayChar(2, 0, '2');
-	strcpy(gStr, " TRIP RECORD VIEW  ");
-	printLCD(2,2,gStr);
+	//DisplayChar(2, 0, '2');
+	strcpy(gStr, "2 TRIP RECORD VIEW  ");
+	printLCD(2,0,gStr,20);
 
-	DisplayChar(3, 0, '3');
-	strcpy(gStr, " SYSTEM RESET     ");
-	printLCD(3,2,gStr);
+	//DisplayChar(3, 0, '3');
+	strcpy(gStr, "3 SYSTEM RESET     ");
+	printLCD(3,0,gStr,20);
 
 
 	while( loopCtrl )
@@ -307,8 +334,6 @@ void SelectMenuPage1()			// System 설정 메뉴
 	}
 }
 
-	
-
 void EditCodeDataProc()
 {
 	BUTTON KeyIn;
@@ -317,9 +342,9 @@ void EditCodeDataProc()
 	int loopCtrl = 1;
 	int changeCode;
 
-	LCD_Cmd(0x01);
+	lcd_clear( );
 
-	strcpy(gStr,msgEditAddr); printLCD(0,0,gStr); 
+	strcpy(gStr,msgEditAddr); printLCD(0,0,gStr,20); 
 
 	SerialPortSetup();	
 	for ( i = 0; i< 9;i++) lcdCode[i] = '0';
@@ -345,40 +370,25 @@ void EditCodeDataProc()
 			for( i = 1 ; i< 4; i++ ) clear_line(i);
 			CopyCode2TxMsg(SCI_CMD_READ_DATA);
 
-		//--- write data
-			gSciTxBuf[9]  ='.';	gSciTxBuf[10] ='0'; gSciTxBuf[11] ='0';	gSciTxBuf[12] ='0'; 
-		//--- exponent part
-			gSciTxBuf[13] ='e'; gSciTxBuf[14] ='+'; gSciTxBuf[15] ='0'; 
-
-		//--- print code discription
-			gSciTxBuf[8]  ='1';
 			sci_rx_msg_start = sci_rx_msg_end = 0;
 			SendSciString( gSciTxBuf );
 			__delay_ms(100);
 			i = getSciMsg(gStr); 
-			if(i) printLCD(2,0,gStr);
+			if(i){
+                printLCD(1,0,gStr,20);
+                printLCD(2,0,gStr+20,20);
+                printLCD(3,0,gStr+40,20);
+            }
 			else {
 				strcpy(gStr,"NO Received Data");				
-				printLCD(1,0,gStr);
-			}
-
-			gSciTxBuf[8]  ='2';
-			sci_rx_msg_start = sci_rx_msg_end = 0;
-			// for(clearcnt = 0; clearcnt <40; clearcnt++) sci_rx_msg_box[clearcnt] = 0;
-			SendSciString( gSciTxBuf ); 
-			__delay_ms(100); 
-			i = getSciMsg(gStr); 
-			if(i) printLCD(3,0,gStr);
-			else {
-				strcpy(gStr,"NO Received Data");				
-				printLCD(3,0,gStr);
+				printLCD(1,0,gStr,20);
 			}
 		}
 		else if ( KeyIn == BTN_SAVE ){	
 			lcdxPosition=0; lcdyPosition=1;
 			CopyCode2TxMsg(SCI_CMD_WRITE_ROM); 
 			SendSciString( gSciTxBuf );
-			__delay_ms(50); getSciMsg(gStr); printLCD(1,0,gStr); // debug
+			__delay_ms(50); getSciMsg(gStr); printLCD(1,0,gStr,20); // debug
 		}
 		else if ( KeyIn == BTN_DOWN){
 			if(lcdCodeId == 7 ){
@@ -432,12 +442,12 @@ void printTripHystory(signed int point)
 
     int row,offset;
     
-	LCD_Cmd(0x01);  // clear lcd
+	lcd_clear( );  // clear lcd
 	temp = point + '0';
 
 	strcpy(gStr, "TRIP [0]");
 	gStr[6] = point + '0';
-	printLCD(0,0,gStr);
+	printLCD(0,0,gStr,8);
 
  	delay_sec();
 
@@ -448,7 +458,7 @@ void printTripHystory(signed int point)
 	SendSciString( gSciTxBuf );
 	delay_sec();
     row = 0; offset = 10;
-	if( getSciMsg(gStr)) printLCD(row,offset,gStr); // disp code
+	if( getSciMsg(gStr)) printLCD(row,offset,gStr,10); // disp code
 	else DisplayChar( 0 , 10, '-');
 
 	sci_rx_msg_start = sci_rx_msg_end = 0;
@@ -458,7 +468,7 @@ void printTripHystory(signed int point)
 	delay_sec(); 
     
     row = 2; offset =0;
-	if( getSciMsg(gStr)) printLCD(row,offset,gStr); // time
+	if( getSciMsg(gStr)) printLCD(row,offset,gStr,10); // time
 	else DisplayChar( 2 , 1, '-');
 
 	sci_rx_msg_start = sci_rx_msg_end = 0;
@@ -466,7 +476,7 @@ void printTripHystory(signed int point)
 	gSciTxBuf[8] = temp;
 	SendSciString( gSciTxBuf );
 	delay_sec(); 
-	if( getSciMsg(gStr)) printLCD(1,0,gStr); // disp message
+	if( getSciMsg(gStr)) printLCD(1,0,gStr,20); // disp message
 	else DisplayChar( 1 , 1, '-');
 
 	sci_rx_msg_start = sci_rx_msg_end = 0;
@@ -474,10 +484,10 @@ void printTripHystory(signed int point)
 	gSciTxBuf[8] = temp;
 	SendSciString( gSciTxBuf );
 	delay_sec(); 
-	if( getSciMsg(gStr)) printLCD(3,0,gStr); // debug
+	if( getSciMsg(gStr)) printLCD(3,0,gStr,20); // debug
 	else{
 		strcpy(gStr," -    ");   
-		printLCD(3,0,gStr);
+		printLCD(3,0,gStr,20);
 	}
 
 	sci_rx_msg_start = sci_rx_msg_end = 0;
@@ -485,7 +495,7 @@ void printTripHystory(signed int point)
 	gSciTxBuf[8] = temp;
 	SendSciString( gSciTxBuf );
 	delay_sec(); 
-	if( getSciMsg(gStr)) printLCD(3,10,gStr); // debug
+	if( getSciMsg(gStr)) printLCD(3,10,gStr,10); // debug
 	else DisplayChar( 3 , 10, '-');
 }
 
@@ -495,26 +505,26 @@ void TripCodeDataProc()			// EEPROM TRIP ERROR DATA LOAD
 	int loopCtrl=1;
 	signed int point = 0;
 	int change=1;
-	LCD_Cmd(0x01);
+	lcd_clear( );
 	strcpy(gStr, "TRIP [0]");
-	printLCD(0,0,gStr);
+	printLCD(0,0,gStr,10);
 
 	strcpy(gStr, "          ");
-	printLCD(0,10,gStr);
+	printLCD(0,10,gStr,10);
 
 	DisplayChar(1, 0, '1');
 	strcpy(gStr, " TRIP DESCIPTION ");
-	printLCD(1,2,gStr);
+	printLCD(1,2,gStr,18);
 
 	DisplayChar(2, 0, '2');
 	strcpy(gStr, " RECORD DATE  ");
-	printLCD(2,2,gStr);
+	printLCD(2,2,gStr,18);
 
 	strcpy(gStr, "VDC=      ");
-	printLCD(3,0,gStr);
+	printLCD(3,0,gStr,18);
 
 	strcpy(gStr, "DATA=     ");
-	printLCD(3,10,gStr);
+	printLCD(3,10,gStr,10);
 
 	printTripHystory(0);
 
@@ -550,17 +560,17 @@ void ResetCodeDataProc()		// 소프트 리셋
 {
 	BUTTON KeyIn;
 
-	LCD_Cmd(0x01);
+	lcd_clear( );
 	strcpy(gStr, " SYSTEM RESET OK?  ");
-	printLCD(0,0,gStr);
+	printLCD(0,0,gStr,20);
 	strcpy(gStr, " YES = PRESS [RUN]");
-	printLCD(2,3,gStr);
+	printLCD(2,3,gStr,17);
 
 	while( 1 ){
 		KeyIn = GetKey();
 
 		if( KeyIn == BTN_RUN){
-			LCD_Cmd(0x01);
+			lcd_clear( );
 			lcdxPosition = 0, lcdyPosition = 0;
 			strcpy(gSciTxBuf,"9:4:902:5.000e-0");	// SYSTEM INIT
 			SendSciString( gSciTxBuf );
@@ -582,17 +592,17 @@ void SystemInitProc()		// 시스템 초기화
 	int loopCtrl = 1;
 	
 	
-	LCD_Cmd(0x01);
+	lcd_clear( );
 	strcpy(gStr, "SYSTEM INIT OK?");
-	printLCD(0,0,gStr);
+	printLCD(0,0,gStr,20);
 	strcpy(gStr, "PRESS RUN RESET");
-	printLCD(2,3,gStr);
+	printLCD(2,3,gStr,17);
 
 	while( loopCtrl ){
 		KeyIn = GetKey();
 
 		if( KeyIn == BTN_RUN){
-			LCD_Cmd(0x01);
+			lcd_clear( );
 			lcdxPosition = 0, lcdyPosition = 0;
 			strcpy(gSciTxBuf,"9:4:902:5.000e-0");	// SYSTEM TRDRY
 			SendSciString( gSciTxBuf );
@@ -616,16 +626,16 @@ void RecordClearProc()		// Trip Record All Clear
 	int loopCtrl =1;
 
 	strcpy(gStr, " REC CLEAR ALL! OK? ");
-	printLCD(0,0,gStr);
+	printLCD(0,0,gStr,20);
 	strcpy(gStr, " YES     NO     ");
-	printLCD(2,3,gStr);
+	printLCD(2,3,gStr,17);
 
 	while(loopCtrl){
 		KeyIn = GetKey();
 		if( KeyIn == BTN_RUN){
 			lcdxPosition = 0;
 			lcdyPosition = 0;
-			LCD_Cmd(0x01);  // clear lcd
+			lcd_clear( );  // clear lcd
 			strcpy(Trip_Message, "                    ");
 			strcpy(gSciTxBuf,"9:4:904:2.000e-0");
 			SendSciString( gSciTxBuf );
@@ -637,5 +647,4 @@ void RecordClearProc()		// Trip Record All Clear
 		}
 	}
 }
-
 //--- end of keyProc.c

@@ -1,6 +1,8 @@
 #ifndef		__EXTERN_H_
 #define		__EXTERN_H_
 
+extern char lcdOut[21];
+
 extern int machineState;
 extern unsigned long secWatchDog;
 

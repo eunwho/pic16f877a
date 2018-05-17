@@ -26,7 +26,8 @@
 #define KEY_UP			PORTBbits.RB4
 #define KEY_DOWN		PORTBbits.RB5
 
-#define TEST_PIN        PORTCbits.RC2
+// #define TEST_PIN        PORTCbits.RC2
+#define TEST_PIN        RC2
 
 #define	ROW1					0			// LCD Row1 Base Address
 #define	ROW2					64			// LCD Row2 Base Address
@@ -45,7 +46,7 @@
 #define	CURSOR_OFF				0x0c
 #define	CURSOR_BLINK_OFF		0x0e
 #define	CURSOR_BLINK			0x0f
-#define	LCD_Clear()				LCD_Cmd(0x01)	// clear LCD,curse home
+#define	LCD_Clear()				lcd_clear( )	// clear LCD,curse home
 
 #define COM_TEST        	0
 #define TEST_MODE           0
@@ -69,7 +70,7 @@
 #define	ERR_SCI_RXD_MISMACH		31
 #define ERR_SPI_RX			51
 #define ERR_SPI_CONNECT		51
-#define SCI_RX_MSG_SIZE		30
+#define SCI_RX_MSG_SIZE		61
 #define SCI_RX_BUF_LENGTH	25
 
 #define SCI_CMD_START		0x41	//'A'

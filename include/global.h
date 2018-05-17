@@ -1,6 +1,8 @@
 #ifndef		__GLOBAL_VAR_
 #define		__GLOBAL_VAR_
 
+
+char lcdOut[21];
 int machineState;
 unsigned long secWatchDog;
 //int machine_stae;

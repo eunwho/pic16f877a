@@ -35,13 +35,16 @@ extern void RecordClearProc();
 extern void SystemInitProc();
 
 //LCD.c 
-extern void Busy();
-extern void LCD_Cmd(unsigned char cmd);
-extern void LCD_Initialization();
-extern void LCD_AddrSet(int addr);
-extern void DisplayChar(int row,int offset,char data);
-extern void lcdCursor(int row,int offset,char CursorCmd);
-extern void printLCD(int row,int offset,char *string);
+extern void lcd_write(unsigned char c);
+extern void lcd_puts(const char * s);
+extern void lcd_goto(unsigned char pos);
+extern void lcd_putch(char c);
+extern void lcd_init(void);
+extern void lcd_clear(void);
+extern void lcdCursorOff(void);
+extern void printLCD(int row,int offset,char *string,int len);
+extern void DisplayChar(int row, int offset, char c);
+extern void lcdCursor(int row, int offset, unsigned char CursorCmd);
 
 //sci.c
 extern void SerialPortSetup();

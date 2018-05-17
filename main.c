@@ -32,8 +32,8 @@ void setup()
 	TRISD = 0b00000000;
 	TRISE = 0b00000000;
 		
-	ADCON0bits.ADON = 0;    // turn off analog module
-	ADCON1bits.PCFG = 15;   // 0b00001111 PCFG3~0 all digital port
+	ADCON0bits.ADON = 0;   // turn off analog module
+	ADCON1bits.PCFG = 7;   // 0b0000011x PCFG3~0 all digital port
 
 	// CMCONbits. setup_comparator(NC_NC_NC_NC);
 	CMCONbits.CM = 7; 
@@ -41,37 +41,74 @@ void setup()
 	
     // setup_timer_0(RTCC_INTERNAL|RTCC_DIV_1);
 
-	TMR2 = 250; // setup_timer_2(T2_DIV_BY_4,250,2);		 // 8,000,000 / (4 * 8 * (249 +1)) = 1,000 = 1/1000 sec
-	T2CONbits.TOUTPS = 1 ;// post scale 2 
-	T2CONbits.T2CKPS = 1 ;// pre scale by 4 ;
-	T2CONbits.TMR2ON = 1 ;// enable_interrupts(INT_TIMER2);
-	
-	__delay_ms(100); 
+	OPTION_REGbits.T0CS = 0;    // internal instruction cycle clock
+ 
+//	TMR2 = 250; // setup_timer_2(T2_DIV_BY_4,250,2);		 // 8,000,000 / (4 * 8 * (249 +1)) = 1,000 = 1/1000 sec
+//	T2CONbits.TOUTPS = 1 ;// post scale 2 
+//	T2CONbits.T2CKPS = 1 ;// pre scale by 4 ;
+//	T2CONbits.TMR2ON = 1 ;// enable_interrupts(INT_TIMER2);
 
-	LCD_Initialization();				
+	lcd_init();				
 
-	PIE1bits.PSPIE = 0;  // setup_psp(PSP_DISABLED);	
 	__delay_ms(250);
 	SerialPortSetup();	
 
-	LCD_Cmd(0x01); // clear lcd
-	INTCONbits.T0IE = 1 ;//enable_interrupts(INT_RDA);	
-	INTCONbits.GIE = 0 ;            //enable_interrupts(GLOBAL);	
+	// setup_timer_2(T2_DIV_BY_4,250,2);		 // 8,000,000 / (4 * 8 * (249 +1)) = 1,000 = 1/1000 sec
+	// set_timer2(0);
+	// enable_interrupts(INT_TIMER2);
+    T2CONbits.TOUTPS = 1 ; // divided by 2
+    T2CONbits.T2CKPS = 1 ; // Prescaled by 4
+    T2CONbits.TMR2ON = 1 ; // Timer 2 On
+    
+    TMR2 = 0;
+    PR2 = 250;    
+	lcd_clear( ); // clear lcd
 
-               //"01234567890123456789"
-	strcpy(gStr, "DIGITAL OPERATOR    "); printLCD(0,0,gStr);
-	strcpy(gStr, "[EwDo-21] v3.60     "); printLCD(1,0,gStr);
-	strcpy(gStr, "EunWho Power Electro"); printLCD(2,0,gStr);
-	strcpy(gStr, "TEL 82-51-262-7532  "); printLCD(3,0,gStr);
-	__delay_ms(5000);
+	PIE1bits.PSPIE = 0;         // off Parallel Slave Port Read/Write ;	
+    PIE1bits.ADIE = 0;          // Off adc conversion interrupt
+    PIE1bits.RCIE = 1;          // On UART receive interrupt
+    PIE1bits.TXIE = 0;          // Off UART tx interrupt
+    PIE1bits.SSPIE = 0;         // Off Synchronous Serial Port interrupt
+    PIE1bits.CCP1IE = 0;        // Off CCP1 interrupt
+
+    PIE1bits.TMR2IE = 1;        // On TMR2 PR2 Match interrupt
+
+    PIE1bits.TMR1IE = 0;        // On TMR1 Overflow interrupt
+    
+    INTCONbits.T0IF = 0;        // Clear the flag
+    INTCONbits.T0IE = 0;        // Enable the interrupt
+    INTCONbits.PEIE = 1;        // Turn on peripheral interrupts  <-- This is needed by you
+    INTCONbits.GIE = 1;         // ... and global interrupts  <-- As is this
 }
+
+displayEunwhoPE(){
+               //"01234567890123456789"
+	strcpy(gStr, "DIGITAL OPERATOR    "); printLCD(0,0,gStr,20);
+	strcpy(gStr, "[EwDo-21] v3.60     "); printLCD(1,0,gStr,20);
+	strcpy(gStr, "EunWho Power Electro"); printLCD(2,0,gStr,20);
+	strcpy(gStr, "TEL 82-51-262-7532  "); printLCD(3,0,gStr,20);
+	__delay_ms(500);
+
+    lcd_clear();
+	__delay_ms(500);
+    
+               //"01234567890123456789"
+	strcpy(gStr, "DIGITAL OPERATOR    "); printLCD(0,0,gStr,20);
+	strcpy(gStr, "[EwDo-21] v3.60     "); printLCD(1,0,gStr,20);
+	strcpy(gStr, "EunWho Power Electro"); printLCD(2,0,gStr,20);
+	strcpy(gStr, "TEL 82-51-262-7532  "); printLCD(3,0,gStr,20);
+	__delay_ms(500);    
+}
+#define LEN_NAME_EW    40
+int scrollCount = 0;
+const char strEunwhoPE[] = "EUNWHO POWER ELECTRONICS www.eunwho.com  ";
+//const int strLenEunwho = 39;
 
 void main()
 {
-
+    int temp,i;
 	setup();
-	
-	LCD_Cmd(DISPLAY_CURSE_BLINK_ON);
+    //displayEunwhoPE();
 	machineState = STATE_MONITOR_MODE;
 
 	while(1){
@@ -80,7 +117,6 @@ void main()
 			secWatchDog = 0;
 			__delay_ms(100); 
 			sci_rx_msg_start = sci_rx_msg_end = 0;
-			LCD_Initialization();				
 			machineState = STATE_MONITOR_MODE;
 			__delay_ms(100); 
 		}
@@ -96,41 +132,40 @@ void main()
 	}
 }
 
-
 void interrupt interruptServiceRoutine()
 {
 	static long watchdog=0;
    	static unsigned long uartMsecCount=0;
     static unsigned long ulTemp;
 
-    if(PIR1bits.TMR1IF){    
-        CLRWDT();
+    if(PIR1bits.TMR2IF){    
+        //clear watchdog
+        #asm 
+            CLRWDT 
+        #endasm    
         gulRtsCount ++;			// 1 msec count 
         watchdog ++;
         if(watchdog  > 1000){
             watchdog = 0;
             secWatchDog++;
         }
- 
-//        if( glRtsCount % 2 ) 	output_high(TEST_PIN);	// debug
-//        else					output_low(TEST_PIN);	//
-
-        PIR1bits.TMR1IF=0;
+        (TEST_PIN) ? TEST_PIN = 0 : TEST_PIN = 1 ;	// debug
+        PIR1bits.TMR2IF=0;
     }
-    
+/*    
     if(PIR1bits.TXIF == 1)
     {
 //        LATCbits.LATC0=!LATCbits.LATC0;
-        PIR1bits.TXIF = 0; // clear tx flag
+        PIR1bits.TXIF = 1; // clear tx flag
     }
-
+*/
     //check if the interrupt is caused by RX pin
     if(PIR1bits.RCIF == 1)
     {
         if( gulRtsCount < uartMsecCount ) ulTemp =  65535 - uartMsecCount + gulRtsCount;
         else                              ulTemp = gulRtsCount - uartMsecCount;
      
-        if( ulTemp > 200 ){ 
+        if( ulTemp > 90 ){ 
         	sci_rx_msg_start = sci_rx_msg_end = 0;
         }
         uartMsecCount = gulRtsCount;	
