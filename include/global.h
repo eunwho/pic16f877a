@@ -11,7 +11,8 @@ int lcdCodeId;
 char lcdCode[12];
 
 char gSciTxBuf[16];
-char gStr[21]={0};
+//char gStr[21]={0};
+char gStr[SCI_RX_MSG_SIZE]={0};
 unsigned long gulRtsCount;				// Incr Timer2 irq base Clockof system
 
 int lcdxPosition=0;

@@ -138,6 +138,40 @@ void monitor_converter_bk()
 void monitSystem(char * strIn){
     int i,len;
    
+    strncpy(lcdOut,strIn,7);
+    printLCD(0,0,lcdOut,7); 
+
+    strncpy(lcdOut,strIn+8,5);
+    printLCD(1,3,lcdOut,5);
+
+    strncpy(lcdOut,strIn+14,5);
+    printLCD(1,14,lcdOut,5); 
+
+    strncpy(lcdOut,strIn+21,4);
+    printLCD(2,3,lcdOut,4);
+
+    strncpy(lcdOut,strIn+26,6);
+    printLCD(2,14,lcdOut,6); 
+
+    if( *(strIn+1) == 'T' ){
+
+        printLCD(0,7,"  E_CODE=    ",13);                
+
+        strncpy(lcdOut,strIn+32,3);
+        printLCD(0,16,lcdOut,3);
+        
+        strncpy(lcdOut,strIn+36,18);        
+        lcdOut[19] = 0;
+        printLCD(3,0,lcdOut,20); 
+    }
+    else{
+        printLCD(3,0,"   www.eunwho.com    ",20);                
+    }
+}
+
+void monitSystem_bk(char * strIn){
+    int i,len;
+   
     strncpy(lcdOut,sci_rx_msg_box,7);
     printLCD(0,0,lcdOut,7); 
 
@@ -211,8 +245,9 @@ void monitor_converter()
 		else if	(KeyIn == BTN_DOWN	){	strcpy(gSciTxBuf,"9:4:905:3.000e-0"); SendSciString( gSciTxBuf );}
 		else{
             lcdStateName();	
-    		strcpy(gSciTxBuf,"9:4:900:0.000e+0");
-            SendSciString( gSciTxBuf );
+            sci_rx_msg_end= 0;
+    		strncpy(gSciTxBuf,"9:4:900:0.000e+0",strlen("9:4:900:0.000e+0"));
+            SendSciString( gSciTxBuf);
         }
     	__delay_ms(100);
 		debug =getSciMsg(gStr); 		
@@ -375,9 +410,9 @@ void EditCodeDataProc()
 			__delay_ms(100);
 			i = getSciMsg(gStr); 
 			if(i){
-                printLCD(1,0,gStr,20);
-                printLCD(2,0,gStr+20,20);
-                printLCD(3,0,gStr+40,20);
+                printLCD(1,0,gStr,9);
+                printLCD(2,0,gStr+9,14);
+                printLCD(3,0,gStr+24,20);
             }
 			else {
 				strcpy(gStr,"NO Received Data");				

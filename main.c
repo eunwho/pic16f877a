@@ -165,14 +165,13 @@ void interrupt interruptServiceRoutine()
         if( gulRtsCount < uartMsecCount ) ulTemp =  65535 - uartMsecCount + gulRtsCount;
         else                              ulTemp = gulRtsCount - uartMsecCount;
      
-        if( ulTemp > 90 ){ 
-        	sci_rx_msg_start = sci_rx_msg_end = 0;
+        if( ulTemp > 500 ){ 
+        	sci_rx_msg_end = 0;
         }
         uartMsecCount = gulRtsCount;	
         sci_rx_msg_box[ sci_rx_msg_end ] = RCREG;
-    	sci_rx_msg_end++;	
-        if( sci_rx_msg_end >= SCI_RX_MSG_SIZE ) sci_rx_msg_end = 0;
-        if( sci_rx_msg_start == sci_rx_msg_end ) sci_rx_msg_start ++; 
+        if( sci_rx_msg_end < SCI_RX_MSG_SIZE ) sci_rx_msg_end ++;
+        
         PIR1bits.RCIF = 0; // clear rx flag
     }
 }

@@ -10,7 +10,7 @@ extern int lcdCodeId;
 extern char lcdCode[12];
 
 extern char gSciTxBuf[16];
-extern char gStr[21];
+extern char gStr[SCI_RX_MSG_SIZE];
 extern unsigned long gulRtsCount;				// Incr Timer2 irq base Clockof system
 
 extern int lcdxPosition;

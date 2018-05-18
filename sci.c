@@ -43,12 +43,13 @@ int getSciMsg(unsigned char * str)
 {
 	int count = 0;
 
-	while( (sci_rx_msg_start != sci_rx_msg_end) && (count < SCI_RX_MSG_SIZE) )
+	while((count < sci_rx_msg_end) && (count < (SCI_RX_MSG_SIZE -1)) )
 	{		
-		*(str ++) = sci_rx_msg_box[sci_rx_msg_start ++ ];
-		if( sci_rx_msg_start >= SCI_RX_MSG_SIZE ) sci_rx_msg_start = 0;		
-		count ++;
+		*str = sci_rx_msg_box[count];
+		str ++ ;
+        count++;
 	}
+    sci_rx_msg_end = 0;    
 	*str = 0;
 	return count;
 }
@@ -79,7 +80,7 @@ void SendChar(char xmit_data)
 void SendSciString(char *string)
 {
 	int count=0;
-	while ((*string) && (count < 40)) {
+	while ((*string) && (count < 17)) {
 		SendChar(*(string++));
 		count++;
 	}
