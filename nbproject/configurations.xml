@@ -8,8 +8,8 @@
       <itemPath>include/extern.h</itemPath>
       <itemPath>include/module.h</itemPath>
       <itemPath>include/define.h</itemPath>
-      <itemPath>/opt/microchip/xc8/v1.44/include/pic16f877a.h</itemPath>
       <itemPath>include/global.h</itemPath>
+      <itemPath>/../opt/microchip/xc8/v1.45/include/pic16f877a.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -33,6 +33,7 @@
   <sourceRootList>
     <Elem>include</Elem>
     <Elem>/opt/microchip/xc8/v1.44/include</Elem>
+    <Elem>/../opt/microchip/xc8/v1.45/include</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -44,7 +45,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC8</languageToolchain>
-        <languageToolchainVersion>1.44</languageToolchainVersion>
+        <languageToolchainVersion>1.45</languageToolchainVersion>
         <platform>2</platform>
       </toolsSet>
       <compileType>

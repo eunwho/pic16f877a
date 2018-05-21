@@ -226,34 +226,51 @@ void lcdStateName( void ){
 
     printLCD(3,0,"   www.eunwho.com    ",20);                
 }
+unsigned long ulGetElapsedTime(unsigned long count){
+    if( gulRtsCount < count )   return ( 65535 - count + gulRtsCount );
+    else                        return  (gulRtsCount - count);
+}    
 
 void monitor_converter()
 {
 	int loopCtrl =1;
 	int debug;
 
+    unsigned long elapsedMsec;
+    unsigned long ulTemp;
+    
 	BUTTON KeyIn;
 
 	lcd_clear( );  // clear lcd
 	while( loopCtrl)
 	{ 
-		KeyIn = GetKey();
+        KeyIn = GetKey();
 		if		(KeyIn == BTN_SET 	){	machineState = STATE_SET_MODE; loopCtrl = 0;	return;}
 		else if	(KeyIn == BTN_RUN	){	strcpy(gSciTxBuf,"9:4:905:0.000e-0"); SendSciString( gSciTxBuf );}
 		else if	(KeyIn == BTN_STOP	){	strcpy(gSciTxBuf,"9:4:905:1.000e-0"); SendSciString( gSciTxBuf );}
 		else if	(KeyIn == BTN_UP	){ 	strcpy(gSciTxBuf,"9:4:905:2.000e-0"); SendSciString( gSciTxBuf );}
 		else if	(KeyIn == BTN_DOWN	){	strcpy(gSciTxBuf,"9:4:905:3.000e-0"); SendSciString( gSciTxBuf );}
 		else{
-            lcdStateName();	
-            sci_rx_msg_end= 0;
-    		strncpy(gSciTxBuf,"9:4:900:0.000e+0",strlen("9:4:900:0.000e+0"));
-            SendSciString( gSciTxBuf);
+
+            ulTemp = ulGetElapsedTime(elapsedMsec);           
+            if(ulTemp > 500 ){
+                lcdStateName();	
+                sci_rx_msg_end= 0;
+                strncpy(gSciTxBuf,"9:4:900:0.000e+0",strlen("9:4:900:0.000e+0"));
+                SendSciString( gSciTxBuf);
+            }
         }
-    	__delay_ms(100);
-		debug =getSciMsg(gStr); 		
-    	if( debug ) {
+        __delay_ms(100);
+        debug =getSciMsg(gStr); 		
+        if( debug ) {
             monitSystem(gStr);
-		}
+            elapsedMsec = gulRtsCount;  // getCount();
+        }
+        else if ( ulTemp > 5000 ){
+            SerialPortSetup();
+            __delay_ms(100);
+            elapsedMsec = gulRtsCount;
+        }
   	} // while loop
 }
 

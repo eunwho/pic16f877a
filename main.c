@@ -162,13 +162,6 @@ void interrupt interruptServiceRoutine()
     //check if the interrupt is caused by RX pin
     if(PIR1bits.RCIF == 1)
     {
-        if( gulRtsCount < uartMsecCount ) ulTemp =  65535 - uartMsecCount + gulRtsCount;
-        else                              ulTemp = gulRtsCount - uartMsecCount;
-     
-        if( ulTemp > 500 ){ 
-        	sci_rx_msg_end = 0;
-        }
-        uartMsecCount = gulRtsCount;	
         sci_rx_msg_box[ sci_rx_msg_end ] = RCREG;
         if( sci_rx_msg_end < SCI_RX_MSG_SIZE ) sci_rx_msg_end ++;
         
