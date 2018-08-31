@@ -48,10 +48,10 @@ extern void lcdCursor(int row, int offset, unsigned char CursorCmd);
 
 //sci.c
 extern void SerialPortSetup();
-extern int SciSend(unsigned char *SciTx);
-extern void SendChar(unsigned char xmit_data);
-extern void SendSciString(unsigned char *string);
-extern int getSciMsg(unsigned char *);
+extern int SciSend( char *SciTx);
+extern void SendChar( char xmit_data);
+extern void SendSciString( char *string);
+extern int getSciMsg( char *);
 
 // AutoTunning.c
 extern int AutoTunningProc();

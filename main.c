@@ -108,8 +108,10 @@ void main()
 {
     int temp,i;
 	setup();
-    //displayEunwhoPE();
-	machineState = STATE_MONITOR_MODE;
+    
+    displayEunwhoPE();
+	
+    machineState = STATE_MONITOR_MODE;
 
 	while(1){
 
@@ -132,7 +134,7 @@ void main()
 	}
 }
 
-void interrupt interruptServiceRoutine()
+void __interrupt() interruptServiceRoutine()
 {
 	static long watchdog=0;
    	static unsigned long uartMsecCount=0;
@@ -140,16 +142,17 @@ void interrupt interruptServiceRoutine()
 
     if(PIR1bits.TMR2IF){    
         //clear watchdog
-        #asm 
-            CLRWDT 
-        #endasm    
+        // #asm 
+        asm("   CLRWDT  "); // CLRWDT 
+        // #endasm    
         gulRtsCount ++;			// 1 msec count 
         watchdog ++;
         if(watchdog  > 1000){
             watchdog = 0;
             secWatchDog++;
         }
-        (TEST_PIN) ? TEST_PIN = 0 : TEST_PIN = 1 ;	// debug
+        if (TEST_PIN)  TEST_PIN = 0 ;
+        else           TEST_PIN = 1 ;	// debug
         PIR1bits.TMR2IF=0;
     }
 /*    

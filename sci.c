@@ -39,7 +39,7 @@ void SerialPortSetup()
 */
 }
 
-int getSciMsg(unsigned char * str)
+int getSciMsg( char * str)
 {
 	int count = 0;
 
