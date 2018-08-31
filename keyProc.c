@@ -13,7 +13,7 @@
 #define KEY_IN_VIEW_SILK	1
 
 #if KEY_IN_VIEW_SILK
-BUTTON GetKey1(){
+BUTTON GetKey1(void){
 	BUTTON KeySave;	
 	if		(! KEY_STOP )	KeySave = BTN_ESC;
 	else if (! KEY_UP)      KeySave = BTN_SAVE;
@@ -47,7 +47,7 @@ BUTTON GetKey1() // 실크가 보이지 않고 LCD 연결선이 꼬여 있음
 #endif
 
 
-BUTTON GetKey( )
+BUTTON GetKey(void)
 {
 	BUTTON KeySave;	
 
@@ -99,32 +99,6 @@ void CopyCode2TxMsg(int cmd)
 	else gSciTxBuf[2] = '4';				// read data		
 }
 
-void monitor_converter_bk()
-{
-    int count = 0;
-    char strTemp[21];
-	BUTTON KeyIn;
-
-    while(1){
-		KeyIn = GetKey();
-		if( KeyIn == BTN_SET 	){	
-    		strcpy(gSciTxBuf,"9:4:900:0.000e+0");
-            SendSciString( gSciTxBuf );
-        }
-        __delay_ms(100);
-        if( getSciMsg(gStr)){
-            if(strlen(gStr)> 19){
-                strncpy(strTemp,gStr,20);                
-                printLCD(2,0,strTemp,20);
-                printLCD(3,0,& gStr[20],20);
-            }
-            else{
-                printLCD(2,0,gStr,20);                
-            }
-        }
-    }
-}
-
 //01234567890123456789
 //[TRIP]    EUNWHO.P.E
 //Io:000.0A  Vo:000.0V
@@ -169,41 +143,6 @@ void monitSystem(char * strIn){
     }
 }
 
-void monitSystem_bk(char * strIn){
-    int i,len;
-   
-    strncpy(lcdOut,sci_rx_msg_box,7);
-    printLCD(0,0,lcdOut,7); 
-
-    strncpy(lcdOut,sci_rx_msg_box+8,5);
-    printLCD(1,3,lcdOut,5);
-
-    strncpy(lcdOut,sci_rx_msg_box+14,5);
-    printLCD(1,14,lcdOut,5); 
-
-    strncpy(lcdOut,sci_rx_msg_box+21,4);
-    printLCD(2,3,lcdOut,4);
-
-    strncpy(lcdOut,sci_rx_msg_box+26,6);
-    printLCD(2,14,lcdOut,6); 
-
-    if( *(sci_rx_msg_box+1) == 'T' ){
-
-        printLCD(0,7,"  E_CODE=    ",13);                
-
-        strncpy(lcdOut,sci_rx_msg_box+32,3);
-        printLCD(0,16,lcdOut,3);
-        
-        strncpy(lcdOut,sci_rx_msg_box+36,18);        
-        lcdOut[19] = 0;
-        printLCD(3,0,lcdOut,20); 
-    }
-    else{
-        printLCD(3,0,"   www.eunwho.com    ",20);                
-    }
-}
-
-
 void lcdStateName( void ){
     int i,len;
    
@@ -231,7 +170,7 @@ unsigned long ulGetElapsedTime(unsigned long count){
     else                        return  (gulRtsCount - count);
 }    
 
-void monitor_converter()
+void monitor_converter(void)
 {
 	int loopCtrl =1;
 	int debug;
@@ -275,7 +214,7 @@ void monitor_converter()
 }
 
 
-void SelectMenuPage2()
+void SelectMenuPage2(void)
 {
 	BUTTON KeyIn;
 	int loopCtrl =1;
@@ -330,7 +269,7 @@ void SelectMenuPage2()
 // read data format   "9:4:123:x.xxxe-x"
 // write data format  "9:6:123:1.234e-3"
 
-void SelectMenuPage1()			// System 설정 메뉴
+void SelectMenuPage1(void)			// System 설정 메뉴
 {
 	BUTTON KeyIn;
 
@@ -386,7 +325,7 @@ void SelectMenuPage1()			// System 설정 메뉴
 	}
 }
 
-void EditCodeDataProc()
+void EditCodeDataProc(void)
 {
 	BUTTON KeyIn;
 
@@ -481,7 +420,7 @@ void EditCodeDataProc()
 	}
 }
 
-void delay_sec()
+void delay_sec(void)
 {
 	int i;
 
@@ -551,7 +490,7 @@ void printTripHystory(signed int point)
 	else DisplayChar( 3 , 10, '-');
 }
 
-void TripCodeDataProc()			// EEPROM TRIP ERROR DATA LOAD
+void TripCodeDataProc(void)			// EEPROM TRIP ERROR DATA LOAD
 {
 	BUTTON KeyIn;
 	int loopCtrl=1;
@@ -608,7 +547,7 @@ void TripCodeDataProc()			// EEPROM TRIP ERROR DATA LOAD
 }
 
 
-void ResetCodeDataProc()		// 소프트 리셋
+void ResetCodeDataProc(void)		// 소프트 리셋
 {
 	BUTTON KeyIn;
 
@@ -638,7 +577,7 @@ void ResetCodeDataProc()		// 소프트 리셋
 }
 
 
-void SystemInitProc()		// 시스템 초기화
+void SystemInitProc(void)		// 시스템 초기화
 {
 	BUTTON KeyIn;
 	int loopCtrl = 1;
@@ -672,7 +611,7 @@ void SystemInitProc()		// 시스템 초기화
 
 const char DATE_POS[12] ={2,3,5,6,9,10,12,13,15,16,18,19};
 
-void RecordClearProc()		// Trip Record All Clear
+void RecordClearProc(void)		// Trip Record All Clear
 {
 	BUTTON KeyIn;
 	int loopCtrl =1;

@@ -4,11 +4,6 @@
 #include    "./include/header.h"
 #include    "./include/extern.h"
 
-void Nop()
-{
-    __delay_us(1);
-}
-
 int WriteEeprom(char addr,char data)
 {
 
@@ -42,11 +37,6 @@ char ReadEeprom(char addr )
 
 	Temp = EEDATA;
 	return	Temp;
-}
-
-unsigned long ulGetNowCount_msec()
-{
-	return gulRtsCount;
 }
 
 unsigned long ulGetDelaymSec(unsigned long Start)

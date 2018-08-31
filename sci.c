@@ -9,7 +9,7 @@
 #include    "./include/header.h"
 #include    "./include/extern.h"
 
-void SerialPortSetup()
+void SerialPortSetup(void)
 {
 	TXSTA=0;
 	RCSTA=0;	
@@ -60,20 +60,18 @@ void SendChar(char xmit_data)
 	unsigned long msec_count=0;
 	unsigned long start_count;
 
-	start_count = ulGetNowCount_msec();
+	start_count = gulRtsCount; 
  	while (!(TXSTAbits.TRMT) && (msec_count < 2 )){ 		// wait untill transmit buffer is empty
 		 msec_count = ulGetDelaymSec( start_count);
-		Nop();
 	 }
 
 	TXREG=xmit_data;		// send character
 
-	start_count = ulGetNowCount_msec();
+	start_count = gulRtsCount; 
 	msec_count= 0;
 
  	while (!(TXSTAbits.TRMT) && (msec_count < 2 )){ 		// wait untill transmit buffer is empty
 		 msec_count = ulGetDelaymSec( start_count);
-		Nop();
 	 }
 }
 

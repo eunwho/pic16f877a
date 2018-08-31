@@ -12,27 +12,25 @@
 #define		__MODULE_FILES_
 
 // SUB.C
-extern void Nop();
 extern int WriteEeprom(char addr,char data);
 extern char ReadEeprom(char addr );
-extern unsigned long ulGetNowCount_msec();
 extern unsigned long ulGetDelaymSec(unsigned long Start);
 
 extern void ErrorProc(int ErrorCode);
 
 // KeyProc.c
-extern void SelectMenuPage1();
-extern void SelectMenuPage2();
-extern void monitor_converter();
-extern int MonitorProc();
-extern void RxMonitData();
-extern int MainMenuProc();
-extern void EditCodeDataProc();
-extern void TripCodeDataProc();
-extern void ReadRealTimeData();
-extern void ResetCodeDataProc();
-extern void RecordClearProc();
-extern void SystemInitProc();
+extern void SelectMenuPage1(void);
+extern void SelectMenuPage2(void);
+extern void monitor_converter(void);
+extern int MonitorProc(void);
+extern void RxMonitData(void);
+extern int MainMenuProc(void);
+extern void EditCodeDataProc(void);
+extern void TripCodeDataProc(void);
+extern void ReadRealTimeData(void);
+extern void ResetCodeDataProc(void);
+extern void RecordClearProc(void);
+extern void SystemInitProc(void);
 
 //LCD.c 
 extern void lcd_write(unsigned char c);
@@ -47,7 +45,7 @@ extern void DisplayChar(int row, int offset, char c);
 extern void lcdCursor(int row, int offset, unsigned char CursorCmd);
 
 //sci.c
-extern void SerialPortSetup();
+extern void SerialPortSetup(void);
 extern int SciSend( char *SciTx);
 extern void SendChar( char xmit_data);
 extern void SendSciString( char *string);

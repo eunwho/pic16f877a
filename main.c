@@ -81,7 +81,7 @@ void setup()
     INTCONbits.GIE = 1;         // ... and global interrupts  <-- As is this
 }
 
-displayEunwhoPE(){
+void displayEunwhoPE(){
                //"01234567890123456789"
 	strcpy(gStr, "DIGITAL OPERATOR    "); printLCD(0,0,gStr,20);
 	strcpy(gStr, "[EwDo-21] v3.60     "); printLCD(1,0,gStr,20);
