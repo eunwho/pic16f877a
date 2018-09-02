@@ -1,6 +1,7 @@
 #ifndef		__EXTERN_H_
 #define		__EXTERN_H_
 
+extern int gSciRxFlag;
 extern char lcdOut[21];
 
 extern int machineState;

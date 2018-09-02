@@ -70,7 +70,7 @@
 #define	ERR_SCI_RXD_MISMACH		31
 #define ERR_SPI_RX			51
 #define ERR_SPI_CONNECT		51
-#define SCI_RX_MSG_SIZE		61
+#define SCI_RX_MSG_SIZE		41
 #define SCI_RX_BUF_LENGTH	25
 
 #define SCI_CMD_START		0x41	//'A'

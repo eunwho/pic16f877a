@@ -109,7 +109,7 @@ void main()
     int temp,i;
 	setup();
     
-    displayEunwhoPE();
+//    displayEunwhoPE();
 	
     machineState = STATE_MONITOR_MODE;
 
@@ -139,7 +139,10 @@ void __interrupt() interruptServiceRoutine()
 	static long watchdog=0;
    	static unsigned long uartMsecCount=0;
     static unsigned long ulTemp;
-
+    char char1;
+    static char sciRxBuf[21];
+    int i ;
+    
     if(PIR1bits.TMR2IF){    
         //clear watchdog
         // #asm 
@@ -155,19 +158,20 @@ void __interrupt() interruptServiceRoutine()
         else           TEST_PIN = 1 ;	// debug
         PIR1bits.TMR2IF=0;
     }
-/*    
-    if(PIR1bits.TXIF == 1)
-    {
-//        LATCbits.LATC0=!LATCbits.LATC0;
-        PIR1bits.TXIF = 1; // clear tx flag
-    }
-*/
-    //check if the interrupt is caused by RX pin
+
     if(PIR1bits.RCIF == 1)
     {
-        sci_rx_msg_box[ sci_rx_msg_end ] = RCREG;
-        if( sci_rx_msg_end < SCI_RX_MSG_SIZE ) sci_rx_msg_end ++;
-        
+        char1 = RCREG;
+        if(char1 == 2 ){
+            sci_rx_msg_end = 0;
+        }else if(char1 == 3 ){
+            for ( i = 0 ; i < sci_rx_msg_end ; i ++ ) sci_rx_msg_box[i] = sciRxBuf[i];
+            sci_rx_msg_end = 0;
+            gSciRxFlag = 1;            
+        }else{
+          sciRxBuf[ sci_rx_msg_end ] = char1;
+          if( sci_rx_msg_end < SCI_RX_MSG_SIZE ) sci_rx_msg_end ++;
+        }
         PIR1bits.RCIF = 0; // clear rx flag
     }
 }

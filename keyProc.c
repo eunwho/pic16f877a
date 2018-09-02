@@ -109,62 +109,6 @@ void CopyCode2TxMsg(int cmd)
 //          Io   Vo     Po   Vdc
 //[TRIP] ,000.0,000.0,000.0,000.0,
 
-void monitSystem(char * strIn){
-    int i,len;
-   
-    strncpy(lcdOut,strIn,7);
-    printLCD(0,0,lcdOut,7); 
-
-    strncpy(lcdOut,strIn+8,5);
-    printLCD(1,3,lcdOut,5);
-
-    strncpy(lcdOut,strIn+14,5);
-    printLCD(1,14,lcdOut,5); 
-
-    strncpy(lcdOut,strIn+21,4);
-    printLCD(2,3,lcdOut,4);
-
-    strncpy(lcdOut,strIn+26,6);
-    printLCD(2,14,lcdOut,6); 
-
-    if( *(strIn+1) == 'T' ){
-
-        printLCD(0,7,"  E_CODE=    ",13);                
-
-        strncpy(lcdOut,strIn+32,3);
-        printLCD(0,16,lcdOut,3);
-        
-        strncpy(lcdOut,strIn+36,18);        
-        lcdOut[19] = 0;
-        printLCD(3,0,lcdOut,20); 
-    }
-    else{
-        printLCD(3,0,"   www.eunwho.com    ",20);                
-    }
-}
-
-void lcdStateName( void ){
-    int i,len;
-   
-    // printLCD(0,0,"[WAIT] ",7);
-
-    len = strlen(" EUNWHO P.E.");   
-    printLCD(0,7," EUNWHO P.E.",len);
-
-    printLCD(1,0,"Io:",3);
-    printLCD(1,8,"A ",2);    
-
-    printLCD(1,10,"Vo: ",4); 
-    DisplayChar(1,19,'V');
-
-    printLCD(2,0,"Po: ",3); 
-    printLCD(2,7,"kW ",3);
-
-    printLCD(2,10,"Vd: ",4); 
-    DisplayChar(2,19,'V');
-
-    printLCD(3,0,"   www.eunwho.com    ",20);                
-}
 unsigned long ulGetElapsedTime(unsigned long count){
     if( gulRtsCount < count )   return ( 65535 - count + gulRtsCount );
     else                        return  (gulRtsCount - count);
@@ -174,8 +118,10 @@ void monitor_converter(void)
 {
 	int loopCtrl =1;
 	int debug;
+    int i;
 
     unsigned long elapsedMsec;
+    unsigned long setTimeOut;
     unsigned long ulTemp;
     
 	BUTTON KeyIn;
@@ -190,25 +136,26 @@ void monitor_converter(void)
 		else if	(KeyIn == BTN_UP	){ 	strcpy(gSciTxBuf,"9:4:905:2.000e-0"); SendSciString( gSciTxBuf );}
 		else if	(KeyIn == BTN_DOWN	){	strcpy(gSciTxBuf,"9:4:905:3.000e-0"); SendSciString( gSciTxBuf );}
 		else{
-
             ulTemp = ulGetElapsedTime(elapsedMsec);           
             if(ulTemp > 500 ){
-                lcdStateName();	
-                sci_rx_msg_end= 0;
-                strncpy(gSciTxBuf,"9:4:900:0.000e+0",strlen("9:4:900:0.000e+0"));
-                SendSciString( gSciTxBuf);
+//                strncpy(gSciTxBuf,"9:4:900:0.000e+0",strlen("9:4:900:0.000e+0"));
+                strcpy(gSciTxBuf,"9:4:900:0.000e+0"); SendSciString( gSciTxBuf );
+                elapsedMsec = gulRtsCount;
             }
         }
-        __delay_ms(100);
-        debug =getSciMsg(gStr); 		
-        if( debug ) {
-            monitSystem(gStr);
-            elapsedMsec = gulRtsCount;  // getCount();
-        }
-        else if ( ulTemp > 5000 ){
-            SerialPortSetup();
-            __delay_ms(100);
-            elapsedMsec = gulRtsCount;
+
+        if( gSciRxFlag ) {
+            debug = sci_rx_msg_box[1] - '0';
+            if(( debug >= 0 ) && ( debug < 4 )) printLCD(debug,0,sci_rx_msg_box + 2,20); 
+            gSciRxFlag = 0;
+            setTimeOut = gulRtsCount;            
+            
+        } else{
+            ulTemp = ulGetElapsedTime(setTimeOut);                       
+            if ( ulTemp > 5000 ){
+                SerialPortSetup();
+                setTimeOut = gulRtsCount;
+            }
         }
   	} // while loop
 }

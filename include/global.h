@@ -1,6 +1,7 @@
 #ifndef		__GLOBAL_VAR_
 #define		__GLOBAL_VAR_
 
+int gSciRxFlag;
 
 char lcdOut[21];
 int machineState;
