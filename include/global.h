@@ -1,6 +1,7 @@
 #ifndef		__GLOBAL_VAR_
 #define		__GLOBAL_VAR_
 
+unsigned long setTimeOutMonit;
 int gSciRxFlag;
 
 char lcdOut[21];

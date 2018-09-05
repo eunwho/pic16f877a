@@ -1,6 +1,9 @@
 #ifndef		__EXTERN_H_
 #define		__EXTERN_H_
 
+extern unsigned long setTimeOutMonit;
+
+
 extern int gSciRxFlag;
 extern char lcdOut[21];
 

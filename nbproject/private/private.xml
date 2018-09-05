@@ -5,12 +5,8 @@
         <group>
             <file>file:/home/eunwho/MPLABXProjects/pic16f877a/main.c</file>
             <file>file:/home/eunwho/MPLABXProjects/pic16f877a/include/module.h</file>
-            <file>file:/home/eunwho/MPLABXProjects/pic16f877a/sub.c</file>
-            <file>file:/home/eunwho/MPLABXProjects/pic16f877a/sci.c</file>
             <file>file:/home/eunwho/MPLABXProjects/pic16f877a/lcd.c</file>
             <file>file:/home/eunwho/MPLABXProjects/pic16f877a/keyProc.c</file>
-            <file>file:/home/eunwho/MPLABXProjects/pic16f877a/include/define.h</file>
-            <file>file:/home/eunwho/MPLABXProjects/pic16f877a/include/extern.h</file>
             <file>file:/home/eunwho/MPLABXProjects/pic16f877a/include/global.h</file>
         </group>
     </open-files>

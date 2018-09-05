@@ -19,6 +19,7 @@ extern unsigned long ulGetDelaymSec(unsigned long Start);
 extern void ErrorProc(int ErrorCode);
 
 // KeyProc.c
+extern void sciRxPrintProc(void);
 extern void SelectMenuPage1(void);
 extern void SelectMenuPage2(void);
 extern void monitor_converter(void);

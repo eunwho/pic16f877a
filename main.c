@@ -164,11 +164,13 @@ void __interrupt() interruptServiceRoutine()
         char1 = RCREG;
         if(char1 == 2 ){
             sci_rx_msg_end = 0;
-        }else if(char1 == 3 ){
+        }else if((char1 == 3 )||(sci_rx_msg_end >= SCI_RX_MSG_SIZE)){
             for ( i = 0 ; i < sci_rx_msg_end ; i ++ ) sci_rx_msg_box[i] = sciRxBuf[i];
+            sci_rx_msg_box[i+1] = 0;
+            sci_rx_msg_box[i+2] = 0;
             sci_rx_msg_end = 0;
             gSciRxFlag = 1;            
-        }else{
+        } else {
           sciRxBuf[ sci_rx_msg_end ] = char1;
           if( sci_rx_msg_end < SCI_RX_MSG_SIZE ) sci_rx_msg_end ++;
         }

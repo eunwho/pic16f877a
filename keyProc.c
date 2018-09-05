@@ -45,7 +45,33 @@ BUTTON GetKey1() // 실크가 보이지 않고 LCD 연결선이 꼬여 있음
 	return KeySave;
 }
 #endif
+unsigned long ulGetElapsedTime(unsigned long count){
+    if( gulRtsCount < count )   return ( 65535 - count + gulRtsCount );
+    else                        return  (gulRtsCount - count);
+}    
 
+extern void sciRxPrintProc(void){
+    unsigned long ulTemp;
+    
+    int debug;
+    
+    if( gSciRxFlag ) {
+        debug = sci_rx_msg_box[1] - '0';
+        if(( debug >= 0 ) && ( debug < 4 )) printLCD(debug,0,sci_rx_msg_box + 2,20); 
+        else {
+            printLCD(2,0,sci_rx_msg_box,20); 
+            printLCD(3,0,sci_rx_msg_box+20,20);                 
+        }
+        gSciRxFlag = 0;
+        setTimeOutMonit = gulRtsCount;                        
+    } else{
+        ulTemp = ulGetElapsedTime(setTimeOutMonit);                       
+        if ( ulTemp > 5000 ){
+            SerialPortSetup();
+            setTimeOutMonit = gulRtsCount;
+        }
+    }
+}
 
 BUTTON GetKey(void)
 {
@@ -109,10 +135,6 @@ void CopyCode2TxMsg(int cmd)
 //          Io   Vo     Po   Vdc
 //[TRIP] ,000.0,000.0,000.0,000.0,
 
-unsigned long ulGetElapsedTime(unsigned long count){
-    if( gulRtsCount < count )   return ( 65535 - count + gulRtsCount );
-    else                        return  (gulRtsCount - count);
-}    
 
 void monitor_converter(void)
 {
@@ -143,20 +165,7 @@ void monitor_converter(void)
                 elapsedMsec = gulRtsCount;
             }
         }
-
-        if( gSciRxFlag ) {
-            debug = sci_rx_msg_box[1] - '0';
-            if(( debug >= 0 ) && ( debug < 4 )) printLCD(debug,0,sci_rx_msg_box + 2,20); 
-            gSciRxFlag = 0;
-            setTimeOut = gulRtsCount;            
-            
-        } else{
-            ulTemp = ulGetElapsedTime(setTimeOut);                       
-            if ( ulTemp > 5000 ){
-                SerialPortSetup();
-                setTimeOut = gulRtsCount;
-            }
-        }
+        sciRxPrintProc();
   	} // while loop
 }
 
@@ -205,8 +214,8 @@ void SelectMenuPage2(void)
 		}
 		else if( KeyIn == BTN_SET){
 			if(		 selection == 1) machineState = STATE_TIME_MODE;
-			// else if( selection == 2)	machineState = STATE_TRIP_MODE;
-			// else						machineState = STATE_RESET_MODE;
+			else if( selection == 2)	machineState = STATE_TRIP_MODE;
+			else						machineState = STATE_RESET_MODE;
 			return;
 		}	
 	}
@@ -244,6 +253,8 @@ void SelectMenuPage1(void)			// System 설정 메뉴
 	{
 		KeyIn = GetKey();
 	
+        sciRxPrintProc();
+        
 		lcdCursor(selection,0,CURSOR_BLINK);
 		if( KeyIn == BTN_DOWN ){
 			if(selection >= 3 ){
@@ -294,7 +305,8 @@ void EditCodeDataProc(void)
 	while( loopCtrl)
 	{
 
-		KeyIn = GetKey();
+        sciRxPrintProc();
+        KeyIn = GetKey();
 	
 		changeCode = 1;
         
@@ -305,28 +317,16 @@ void EditCodeDataProc(void)
 			else			lcdCodeId -- ;
 		}	
 		else if ( KeyIn == BTN_SET){
-			for( i = 1 ; i< 4; i++ ) clear_line(i);
+			// for( i = 1 ; i< 4; i++ ) clear_line(i);
 			CopyCode2TxMsg(SCI_CMD_READ_DATA);
-
-			sci_rx_msg_start = sci_rx_msg_end = 0;
+//			sci_rx_msg_start = sci_rx_msg_end = 0;
 			SendSciString( gSciTxBuf );
-			__delay_ms(100);
-			i = getSciMsg(gStr); 
-			if(i){
-                printLCD(1,0,gStr,9);
-                printLCD(2,0,gStr+9,14);
-                printLCD(3,0,gStr+24,20);
-            }
-			else {
-				strcpy(gStr,"NO Received Data");				
-				printLCD(1,0,gStr,20);
-			}
 		}
 		else if ( KeyIn == BTN_SAVE ){	
 			lcdxPosition=0; lcdyPosition=1;
 			CopyCode2TxMsg(SCI_CMD_WRITE_ROM); 
 			SendSciString( gSciTxBuf );
-			__delay_ms(50); getSciMsg(gStr); printLCD(1,0,gStr,20); // debug
+//			__delay_ms(50); getSciMsg(gStr); printLCD(1,0,gStr,20); // debug
 		}
 		else if ( KeyIn == BTN_DOWN){
 			if(lcdCodeId == 7 ){
@@ -502,7 +502,7 @@ void ResetCodeDataProc(void)		// 소프트 리셋
 	strcpy(gStr, " SYSTEM RESET OK?  ");
 	printLCD(0,0,gStr,20);
 	strcpy(gStr, " YES = PRESS [RUN]");
-	printLCD(2,3,gStr,17);
+	printLCD(2,0,gStr,17);
 
 	while( 1 ){
 		KeyIn = GetKey();
@@ -510,7 +510,7 @@ void ResetCodeDataProc(void)		// 소프트 리셋
 		if( KeyIn == BTN_RUN){
 			lcd_clear( );
 			lcdxPosition = 0, lcdyPosition = 0;
-			strcpy(gSciTxBuf,"9:4:902:5.000e-0");	// SYSTEM INIT
+			strcpy(gSciTxBuf,"9:4:902:5.000e+0");	// eeprom init start
 			SendSciString( gSciTxBuf );
 
 			machineState = STATE_MONITOR_MODE;
