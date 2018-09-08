@@ -125,17 +125,6 @@ void CopyCode2TxMsg(int cmd)
 	else gSciTxBuf[2] = '4';				// read data		
 }
 
-//01234567890123456789
-//[TRIP]    EUNWHO.P.E
-//Io:000.0A  Vo:000.0V
-//Po:000.0kW Vd:000.0V
-//T_CODE: 000  
-// UNDER VOLT
-
-//          Io   Vo     Po   Vdc
-//[TRIP] ,000.0,000.0,000.0,000.0,
-
-
 void monitor_converter(void)
 {
 	int loopCtrl =1;
