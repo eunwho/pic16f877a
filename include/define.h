@@ -98,12 +98,14 @@
 #define	STATE_INIT_RUN			'3'
 #define	STATE_GO_STOP			'4'
 #define	STATE_WAIT_BREAK_OFF	'5'
+
 #define STATE_MONITOR_MODE	0
 #define STATE_EDIT_MODE		1
 #define STATE_TRIP_MODE		2
 #define STATE_SET_MODE		3
 #define STATE_RESET_MODE	4
-#define STATE_TIME_MODE		5
+//#define STATE_TIME_MODE		5
+#define STATE_READ_ADC      5      
 #define STATE_ERROR_MODE	6
 #define RECORD_CLEAR_MODE	7
 #define SYSTEM_INIT_MODE	8

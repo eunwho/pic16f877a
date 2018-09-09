@@ -39,22 +39,6 @@ void SerialPortSetup(void)
 */
 }
 
-int getSciMsg( char * str)
-{
-	int count = 0;
-
-	while((count < sci_rx_msg_end) && (count < (SCI_RX_MSG_SIZE -1)) )
-	{		
-		*str = sci_rx_msg_box[count];
-		str ++ ;
-        count++;
-	}
-    sci_rx_msg_end = 0;    
-	*str = 0;
-	return count;
-}
-
-
 void SendChar(char xmit_data)
 {
 	unsigned long msec_count=0;

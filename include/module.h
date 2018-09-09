@@ -29,9 +29,10 @@ extern int MainMenuProc(void);
 extern void EditCodeDataProc(void);
 extern void TripCodeDataProc(void);
 extern void ReadRealTimeData(void);
-extern void ResetCodeDataProc(void);
+extern void ResetSystemProc(void);
 extern void RecordClearProc(void);
 extern void SystemInitProc(void);
+extern void readAdcProc(void);
 
 //LCD.c 
 extern void lcd_write(unsigned char c);
@@ -50,7 +51,6 @@ extern void SerialPortSetup(void);
 extern int SciSend( char *SciTx);
 extern void SendChar( char xmit_data);
 extern void SendSciString( char *string);
-extern int getSciMsg( char *);
 
 // AutoTunning.c
 extern int AutoTunningProc();

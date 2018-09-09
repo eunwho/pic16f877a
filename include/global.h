@@ -1,6 +1,8 @@
 #ifndef		__GLOBAL_VAR_
 #define		__GLOBAL_VAR_
 
+int oneMinute;  //
+
 unsigned long setTimeOutMonit;
 int gSciRxFlag;
 

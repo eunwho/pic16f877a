@@ -1,6 +1,8 @@
 #ifndef		__EXTERN_H_
 #define		__EXTERN_H_
 
+extern int oneMinute;  //
+
 extern unsigned long setTimeOutMonit;
 
 

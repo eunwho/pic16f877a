@@ -126,8 +126,8 @@ void main()
 		else if( machineState == STATE_SET_MODE2 ) SelectMenuPage2();			
 		else if( machineState == STATE_EDIT_MODE) EditCodeDataProc();			
 		else if( machineState == STATE_TRIP_MODE) TripCodeDataProc();			
-		else if( machineState == STATE_RESET_MODE) ResetCodeDataProc();		
-		// else if( machineState == STATE_ERROR_MODE)	ErrorCodeDataProc();	
+		else if( machineState == STATE_RESET_MODE) ResetSystemProc();		
+		else if( machineState == STATE_READ_ADC)	readAdcProc();	
 		else if( machineState == RECORD_CLEAR_MODE) RecordClearProc();			
 		else if( machineState == SYSTEM_INIT_MODE) SystemInitProc();			
 		else {   machineState = STATE_MONITOR_MODE; monitor_converter();}
@@ -144,10 +144,7 @@ void __interrupt() interruptServiceRoutine()
     int i ;
     
     if(PIR1bits.TMR2IF){    
-        //clear watchdog
-        // #asm 
         asm("   CLRWDT  "); // CLRWDT 
-        // #endasm    
         gulRtsCount ++;			// 1 msec count 
         watchdog ++;
         if(watchdog  > 1000){
