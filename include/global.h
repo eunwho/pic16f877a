@@ -14,6 +14,7 @@ unsigned long secWatchDog;
 int lcdCodeId;
 char lcdCode[12];
 
+int sciRxdNumber;
 char gSciTxBuf[16];
 //char gStr[21]={0};
 char gStr[SCI_RX_MSG_SIZE]={0};

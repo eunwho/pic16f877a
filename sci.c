@@ -62,7 +62,7 @@ void SendChar(char xmit_data)
 void SendSciString(char *string)
 {
 	int count=0;
-	while ((*string) && (count < 17)) {
+	while ((*string) && (count < 20)) {
 		SendChar(*(string++));
 		count++;
 	}

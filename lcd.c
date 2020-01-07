@@ -131,6 +131,11 @@ void lcd_init(void){
 void printLCD(int row, int offset,char * string,int len)
 {
     int	i,Addr;
+    int length;
+    
+    if( len > 19 ) length = 19;
+    else            length = len;
+    
 	switch (row)
 	{
 		case	0	:	Addr=ROW1;	break;
@@ -140,7 +145,7 @@ void printLCD(int row, int offset,char * string,int len)
 	}
     lcd_goto(Addr+offset);
     i = 0;
-    while((*string) && (i < len) ){
+    while((*string) && (i < length) ){
         i++;
         lcd_putch(*string ++);
     }

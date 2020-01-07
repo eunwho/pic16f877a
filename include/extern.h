@@ -23,6 +23,7 @@ extern int lcdxPosition;
 extern int lcdyPosition;
 extern int disp_count;
 
+extern int sciRxdNumber;                // number of received data
 extern int sci_rx_msg_start;
 extern int sci_rx_msg_end;
 extern char sci_rx_msg_box[SCI_RX_MSG_SIZE];

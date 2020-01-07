@@ -12,6 +12,21 @@
             <asminc-extensions/>
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>include</sourceRootElem>
+                <sourceRootElem>/opt/microchip/xc8/v1.44/include</sourceRootElem>
+                <sourceRootElem>/../opt/microchip/xc8/v1.45/include</sourceRootElem>
+                <sourceRootElem>/opt/microchip/xc8/v2.00/pic/include</sourceRootElem>
+            </sourceRootList>
+            <confList>
+                <confElem>
+                    <name>default</name>
+                    <type>2</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
         </data>
     </configuration>
 </project>

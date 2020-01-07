@@ -51,19 +51,40 @@ unsigned long ulGetElapsedTime(unsigned long count){
     else                        return  (gulRtsCount - count);
 }    
 
+unsigned long getAddr( char * rxdata ){
+    int hundreds, tens, ones, temp;
+    
+    temp = (*(rxdata + 4 ) - 0x30);
+    temp = ( temp < 0 )? 0 : temp;
+    hundreds = ( temp > 9 )? 9 : temp;
+
+    temp = (*(rxdata + 5 ) - 0x30);
+    temp = ( temp < 0 )? 0 : temp;
+    tens = ( temp > 9 )? 9 : temp;
+
+    temp = (*(rxdata + 6 ) - 0x30);
+    temp = ( temp < 0 )? 0 : temp;
+    ones = ( temp > 9 )? 9 : temp;
+   
+    return (hundreds * 100 + tens * 10 + ones);
+}
+
+
 extern void sciRxPrintProc(void){
     unsigned long ulTemp;
     
     int debug;
     
-    if( gSciRxFlag ) {
-        debug = sci_rx_msg_box[1] - '0';
-        if(( debug >= 0 ) && ( debug < 4 )) printLCD(debug,0,sci_rx_msg_box + 2,20); 
-        else {
+    if( gSciRxFlag ) {        
+        ulTemp = getAddr(sci_rx_msg_box);
+        if( ulTemp == 900 ){
+            printLCD(0,0,sci_rx_msg_box+8,17);
+            printLCD(1,0,sci_rx_msg_box+25,20);            
+        } else {
             printLCD(2,0,sci_rx_msg_box,20); 
-            printLCD(3,0,sci_rx_msg_box+20,20);                 
-        }
-        gSciRxFlag = 0;
+            if(sciRxdNumber > 19 ) printLCD(3,0,sci_rx_msg_box+19,20);                 
+        }    
+        sciRxdNumber = gSciRxFlag = 0;
         setTimeOutMonit = gulRtsCount;                        
     } else{
         ulTemp = ulGetElapsedTime(setTimeOutMonit);                       
