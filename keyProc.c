@@ -79,7 +79,7 @@ extern void sciRxPrintProc(void){
         ulTemp = getAddr(sci_rx_msg_box);
         if( ulTemp == 900 ){
             printLCD(0,0,sci_rx_msg_box+8,17);
-            printLCD(1,0,sci_rx_msg_box+25,20);            
+            printLCD(1,0,sci_rx_msg_box+25,18);            
         } else {
             printLCD(2,0,sci_rx_msg_box,20); 
             if(sciRxdNumber > 19 ) printLCD(3,0,sci_rx_msg_box+19,20);                 
@@ -171,7 +171,7 @@ void monitor_converter(void)
 		else{
             ulTemp = ulGetElapsedTime(elapsedMsec);           
             if(ulTemp > 500 ){
-                strcpy(gSciTxBuf,"9:4:900:0.000e+0"); SendSciString( gSciTxBuf );
+                strcpy(gSciTxBuf,"9:4:900:1.000e+1"); SendSciString( gSciTxBuf );
                 elapsedMsec = gulRtsCount;
             }
         }

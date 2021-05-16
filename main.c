@@ -83,21 +83,21 @@ void setup()
 
 void displayEunwhoPE(){
                //"01234567890123456789"
-	strcpy(gStr, "DIGITAL OPERATOR    "); printLCD(0,0,gStr,20);
-	strcpy(gStr, "[EwDo-21] V2020     "); printLCD(1,0,gStr,20);
-	strcpy(gStr, "DongHo Power Electro"); printLCD(2,0,gStr,20);
-	strcpy(gStr, "TEL 82-51-262-7532  "); printLCD(3,0,gStr,20);
-	__delay_ms(500);
+	strncpy(gStr, "DIGITAL OPERATOR    ",20); printLCD(0,0,gStr,20);
+	strncpy(gStr, "[EwDo-21] V2020     ",20); printLCD(1,0,gStr,20);
+	strncpy(gStr, "DongHo Power Electro",20); printLCD(2,0,gStr,20);
+	strncpy(gStr, "TEL 82-51-262-7532  ",20); printLCD(3,0,gStr,20);
+	__delay_ms(1000);
 
     lcd_clear();
-	__delay_ms(500);
+	__delay_ms(1000);
     
                //"01234567890123456789"
-	strcpy(gStr, "DIGITAL OPERATOR    "); printLCD(0,0,gStr,20);
-	strcpy(gStr, "[EwDo-21] V2020     "); printLCD(1,0,gStr,20);
-	strcpy(gStr, "DongHo Power Electro"); printLCD(2,0,gStr,20);
-	strcpy(gStr, "TEL 82-51-262-7532  "); printLCD(3,0,gStr,20);
-	__delay_ms(500);    
+	strncpy(gStr, "DIGITAL OPERATOR    ",20); printLCD(0,0,gStr,20);
+	strncpy(gStr, "[EwDo-21] V2020     ",20); printLCD(1,0,gStr,20);
+	strncpy(gStr, "DongHo Power Electro",20); printLCD(2,0,gStr,20);
+	strncpy(gStr, "TEL 82-51-262-7532  ",20); printLCD(3,0,gStr,20);
+	__delay_ms(1000);    
 }
 #define LEN_NAME_EW    40
 int scrollCount = 0;
@@ -108,9 +108,16 @@ void main()
 {
     int temp,i;
 	setup();
-    
-    // displayEunwhoPE();
-	
+
+/*    for( ; ; ){
+        displayEunwhoPE();
+        __delay_ms(1000);    
+        lcd_clear( );
+        __delay_ms(1000);            
+    }    
+*/
+    displayEunwhoPE();
+
     machineState = STATE_MONITOR_MODE;
 
 	while(1){
@@ -159,7 +166,9 @@ void __interrupt() interruptServiceRoutine()
     if(PIR1bits.RCIF == 1)        
     {
         char1 = RCREG;
-        if((char1 == '\n' )||(sci_rx_msg_end >= SCI_RX_MSG_SIZE)){
+        if(char1 == 2 ){
+            sci_rx_msg_end=0;
+        }else if((char1 == '\n' )||(sci_rx_msg_end >= SCI_RX_MSG_SIZE)){
             for ( i = 0 ; i < sci_rx_msg_end ; i ++ ) sci_rx_msg_box[i] = sciRxBuf[i];
             sci_rx_msg_box[i+1] = 0;
             sci_rx_msg_box[i+2] = 0;
