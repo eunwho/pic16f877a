@@ -4,20 +4,11 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>include/header.h</itemPath>
-      <itemPath>include/extern.h</itemPath>
-      <itemPath>include/module.h</itemPath>
       <itemPath>include/define.h</itemPath>
-      <itemPath>include/global.h</itemPath>
-      <itemPath>include/pic16f877a.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
-      <itemPath>sub.c</itemPath>
-      <itemPath>sci.c</itemPath>
-      <itemPath>lcd.c</itemPath>
-      <itemPath>keyProc.c</itemPath>
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
@@ -41,7 +32,7 @@
     <conf name="default" type="2">
       <toolsSet>
         <developmentServer>localhost</developmentServer>
-        <targetDevice>PIC16F877A</targetDevice>
+        <targetDevice>PIC16F74</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>

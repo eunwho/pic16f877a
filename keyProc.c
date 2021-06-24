@@ -10,7 +10,7 @@
 #include    "./include/header.h"
 #include    "./include/extern.h"
 
-#define RETURN_SEC  10
+#define RETURN_SEC  120
 #define KEY_IN_VIEW_SILK	1
 
 #if KEY_IN_VIEW_SILK
@@ -400,7 +400,7 @@ void readAdcProc(void)		//
 
     lcdCursorOff();
 	lcd_clear( );  // clear lcd
-	strcpy(gStr, "[ READ ADC VALUE ]");
+	strcpy(gStr, "[a,b,vd,vo,se,cm,ax]");
 	printLCD(0,0,gStr,20);
 
 	secWatchDog = 0;
@@ -414,7 +414,7 @@ void readAdcProc(void)		//
 		} else{
             ulTemp = ulGetElapsedTime(elapsedMsec);           
             if(ulTemp > 500 ){
-                strcpy(gSciTxBuf,"9:4:980:0.000e+0"); SendSciString( gSciTxBuf );
+                strcpy(gSciTxBuf,"9:4:910:0.000e+0"); SendSciString( gSciTxBuf );
                 elapsedMsec = gulRtsCount;
             }
         }

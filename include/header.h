@@ -3,10 +3,8 @@
 #include    <xc.h>
 
 #include	"define.h"
-#include	"module.h"
-#include	"extern.h"
 
-#include	<pic16f877a.h>
+#include	<pic16f74.h>
 #include	<ctype.h>
 #include	<stddef.h>
 #include 	<string.h>
