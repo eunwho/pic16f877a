@@ -18,6 +18,7 @@
 int gSciRxFlag;
 int gSciRxTestFlag;
 int rxCount = 0;    
+unsigned long powerFactor;
 
 unsigned long secWatchDog;
 unsigned long gulRtsCount;				// Incr Timer2 irq base Clockof system
@@ -29,7 +30,7 @@ char rxdTestBuf[10]={0};
 const char STATUS_READ[10] = {0x74,0x41,0x06,0x32,0xED,0x0D,0x0A,0,0,0};
 char str1[10] = {0};
 
-const int RY_TABLE[3][7][2] = { 
+const char RY_TABLE[3][7][2] = { 
     {{RY05, 0},{RY03,0},{RY01,0},{RY01+RY02,0},{RY01+RY02,RY11     },{RY01+RY02+RY03,RY13},{RY01+RY02+RY03+RY06,RY13}}, // below 85%
     {{RY06, 0},{RY04,0},{RY03,0},{RY03+RY04,0},{RY03+RY04, 0       },{RY04+RY05     ,RY11},{RY04+RY05+RY07+RY08,RY11}},   // below 94%
     {{RY07, 0},{RY05,0},{RY04,0},{RY05+RY06,0},{0        ,RY10+RY13},{RY06          ,RY12},{ 0       ,RY09+RY10+RY12}}   // below 94%
@@ -100,7 +101,7 @@ void setup()
 void main()
 {
     int temp,i;
-    int x,y,powerFactor;
+    int x,y;
     unsigned long start_count,msec_count;
 	
     setup();
@@ -125,9 +126,9 @@ void main()
             
             powerFactor = (unsigned long)( rxdFact[1] * 256 ) +  rxdFact[0]  ;
             
-            rxdFact[0] = (powerFactor / 100)        + 0x30;
-            rxdFact[1] = ((powerFactor % 100)/10)   + 0x30;
-            rxdFact[2] = (powerFactor % 10) + 0x30;
+            rxdFact[0] = (unsigned char)((powerFactor / 100) + 0x30);
+            rxdFact[1] = (unsigned char)(((powerFactor % 100)/10)   + 0x30);
+            rxdFact[2] = (unsigned char)((powerFactor % 10) + 0x30);
             rxdFact[3] = '\r';
             rxdFact[4] = '\n';
             
@@ -222,7 +223,7 @@ void __interrupt() interruptServiceRoutine()
             
             if(rxCount == 68 ){
                 if (char1 == 0x1A) gSciRxFlag = 1;   
-                rxdFact[6] = rxCount; 
+                rxdFact[6] = (unsigned char)rxCount; 
                 rxdStartFlag = 0;
                 rxCount = 0;
             }else if(rxCount > 68){
