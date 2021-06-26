@@ -108,7 +108,10 @@ void main()
 
     // char sendBuf[20]={0};
     start_count = gulRtsCount; 
-
+    PORTB = 1;
+    PORTA = 0; 
+    PORTE = 0;
+ 
     while(1){
         msec_count = ulGetDelaymSec( start_count) ;
    
