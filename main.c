@@ -137,11 +137,11 @@ void main()
             
             for(i=0;i <5 ; i++ ) SendChar( rxdFact[i]);
  
-            if      (powerFactor < 851 ) x = 0;
-            else if (powerFactor < 941 ) x = 1;
-            else if (powerFactor < 971 ) x = 2;
-            else                         x = 2; 
-
+            if      (powerFactor < 851 ) PORTB = 1;
+            else if (powerFactor < 941 ) PORTB = 3;
+            else if (powerFactor < 971 ) PORTB = 7;
+            else                         PORTB = 7; 
+/*
             if      (DIP_SW7) y = 6;
             else if (DIP_SW6) y = 5;
             else if (DIP_SW5) y = 4;
@@ -152,10 +152,12 @@ void main()
             else              y = 10;
 
             if( y < 7 ) { 
-                PORTB = RY_TABLE[x][y][0];
+                PORTB = 
                 PORTA = RY_TABLE[x][y][1] >> 2; 
                 PORTE = RY_TABLE[x][y][1];
+
             }    
+*/
         }
     }
 }
