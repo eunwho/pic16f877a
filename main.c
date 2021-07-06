@@ -14,6 +14,7 @@
 
 #include "./include/define.h"
 #include <pic16f74.h>
+unsigned char busAddr;
 
 int gSciRxFlag;
 int gSciRxTestFlag;
@@ -98,6 +99,26 @@ void setup()
 
 // every 1 msec check receive Data;
 
+unsigned char getBusAddr()
+{
+    unsigned char y;
+    if(DIP_SW8){
+            if(DIP_SW1) y = 10;
+            else        y = 9;
+    }
+    else if (DIP_SW7) y = 8;
+    else if (DIP_SW6) y = 7;
+    else if (DIP_SW5) y = 6;
+    else if (DIP_SW4) y = 5;
+    else if (DIP_SW3) y = 4;
+    else if (DIP_SW2) y = 3;
+    else if (DIP_SW1) y = 2;
+    else              y = 1;
+
+    y = y + 0x30;
+    return y;
+}
+
 void main()
 {
     int temp,i;
@@ -113,6 +134,9 @@ void main()
     PORTE = 0;
  
     while(1){
+        
+        
+        busAddr = getBusAddr();
         msec_count = ulGetDelaymSec( start_count) ;
    
         if(msec_count > 2000 ) {
@@ -141,23 +165,6 @@ void main()
             else if (powerFactor < 941 ) PORTB = 3;
             else if (powerFactor < 971 ) PORTB = 7;
             else                         PORTB = 7; 
-/*
-            if      (DIP_SW7) y = 6;
-            else if (DIP_SW6) y = 5;
-            else if (DIP_SW5) y = 4;
-            else if (DIP_SW4) y = 3;
-            else if (DIP_SW3) y = 2;
-            else if (DIP_SW2) y = 1;
-            else if (DIP_SW1) y = 0;
-            else              y = 10;
-
-            if( y < 7 ) { 
-                PORTB = 
-                PORTA = RY_TABLE[x][y][1] >> 2; 
-                PORTE = RY_TABLE[x][y][1];
-
-            }    
-*/
         }
     }
 }
@@ -190,7 +197,7 @@ void __interrupt() interruptServiceRoutine()
     {
         char1 = RCREG;
       
-        if ( char1 == 0x74 ) {
+        if ( char1 == 0x73 ) {
             rxdTestBuf[0] = char1;
             testFlag=1;
             checkCount = 0;
@@ -201,7 +208,7 @@ void __interrupt() interruptServiceRoutine()
             checkCount ++;
             
             if(checkCount == 4){
-                if((rxdTestBuf[0]==0x74)&&(rxdTestBuf[1]==0x41)&&(rxdTestBuf[2]==0x44)&&(rxdTestBuf[3]==0x32)){
+                if((rxdTestBuf[0]==0x73)&&(rxdTestBuf[1]==0x41)&&(rxdTestBuf[2]==0x08)&&(rxdTestBuf[3]==busAddr)){
                 //if((rxdTestBuf[0]==0x74)&&(rxdTestBuf[1]==0x41)){
                     rxCount = 3 ; rxdStartFlag = 1; 
                     //for( i = 0; i < 7 ; i++) rxdFact[i] = 0X01;                                    
@@ -209,7 +216,8 @@ void __interrupt() interruptServiceRoutine()
                     testFlag = 0;
                     // no rxCount = 0;
                     checkCount = 0;
-                    for( i = 0; i < 4 ; i++) rxdTestBuf[i] = 0X00;                                    
+                    for( i = 0; i < 4 ; i++) rxdTestBuf[i] = 0X00;  
+                    
                 }
             } 
             
@@ -219,19 +227,15 @@ void __interrupt() interruptServiceRoutine()
             rxCount ++;
             // gSciRxFlag = 1;
             
-            if( rxCount == 53) rxdFact[0] = char1;
-            if( rxCount == 54) rxdFact[1] = char1;
-            if( rxCount == 55) rxdFact[2] = char1;
-            if( rxCount == 56) rxdFact[3] = char1;
-            if( rxCount == 57) rxdFact[4] = char1;
-            if( rxCount == 58) rxdFact[5] = char1;
+            if( rxCount == 5) rxdFact[0] = char1;
+            if( rxCount == 6) rxdFact[1] = char1;
             
-            if(rxCount == 68 ){
-                if (char1 == 0x1A) gSciRxFlag = 1;   
+            if(rxCount == 8 ){
+                if (char1 == 0x0A) gSciRxFlag = 1;   
                 rxdFact[6] = (unsigned char)rxCount; 
                 rxdStartFlag = 0;
                 rxCount = 0;
-            }else if(rxCount > 68){
+            }else if(rxCount > 8){
                 rxdStartFlag = 0;
                 rxCount = 0;                
             }
