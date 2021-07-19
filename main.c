@@ -119,6 +119,8 @@ unsigned char getBusAddr()
     return y;
 }
 
+int machineState = 0;
+
 void main()
 {
     int temp,i;
@@ -129,25 +131,23 @@ void main()
 
     // char sendBuf[20]={0};
     start_count = gulRtsCount; 
-    PORTB = 1;
+    PORTB = 0;
     PORTA = 0; 
     PORTE = 0;
  
     while(1){
         
-        
         busAddr = getBusAddr();
         msec_count = ulGetDelaymSec( start_count) ;
-   
+
+/*        
         if(msec_count > 2000 ) {
             start_count = gulRtsCount;
             //for(i=0;i < 8 ; i++) str1[i] = STATUS_READ[i];
             //SendSciString(str1); 
-            //__delay_ms(10);
-            
+            //__delay_ms(10);            
         }
-        
-        
+*/        
         if( gSciRxFlag ){
             gSciRxFlag = 0;
             
@@ -158,15 +158,47 @@ void main()
             rxdFact[2] = (unsigned char)((powerFactor % 10) + 0x30);
             rxdFact[3] = '\r';
             rxdFact[4] = '\n';
+            for(i=0;i < 5 ; i++ ) SendChar( rxdFact[i]);
             
-            for(i=0;i <5 ; i++ ) SendChar( rxdFact[i]);
- 
-            if      (powerFactor < 851 ) PORTB = 1;
-            else if (powerFactor < 941 ) PORTB = 3;
-            else if (powerFactor < 971 ) PORTB = 7;
-            else                         PORTB = 7; 
+            switch(machineState){
+                case 0:
+                    if( powerFactor > 300 ){
+                        PORTB = 1;
+                        start_count = gulRtsCount; 
+                        machineState = 1;
+                    }
+                    break;
+                case 1:
+                    msec_count = ulGetDelaymSec( start_count) ;
+                    if(msec_count > 5000 ){
+                        if( powerFactor < 970){
+                            PORTB = 3;
+                            start_count = gulRtsCount;
+                            machineState = 2;
+                        }    
+                    }
+                    break;
+                case 2:
+                    msec_count = ulGetDelaymSec( start_count) ;
+                    if(msec_count > 5000 ){
+                        start_count = gulRtsCount;                        
+                        if( powerFactor < 97){
+                            PORTB = 7;
+                            machineState = 3;                            
+                        }
+                    }
+                    break;
+                case 3:
+                    msec_count = ulGetDelaymSec( start_count) ;
+                    if(msec_count > 5000 ){
+                        start_count = gulRtsCount;                        
+                        if( powerFactor < 97) machineState = 0;                            
+                    }
+                    break;
+            }        
+
         }
-    }
+    }    
 }
 
 
